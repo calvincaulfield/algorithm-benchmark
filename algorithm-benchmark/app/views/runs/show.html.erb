@@ -3,13 +3,18 @@ Date = <%= @run.date %> <br>
 Tags: <% @run.tags.each do |tag| %>
     <%= tag %> 
 <% end %>
-
+Comment: <%= @run.comment %> 
 <% 
 background = ['rgba(100, 6, 40, 0.6)', 'rgba(150, 6, 40,  0.6)', "rgba(200, 6, 40,  0.6)"]
+sorted_result = @run.data["results"].sort_by { |k, v| v[0]} .reverse %>
+
+<!-- <%= sorted_result.inspect %> -->
+
+<%
 data = {
-  labels: @run.data["results"].keys,
+  labels: sorted_result.map { |arr| arr[0] },
   datasets: @run.data["test_cases"].each_with_index.map { |test_case, i| 
-     dataValue = @run.data["results"].values.map {|arr| arr[i]}
+     dataValue = sorted_result.map { |arr| arr[1] } .map {|arr| arr[i]}
      { label: test_case, backgroundColor: background[i], data: dataValue }
   }
 } 
