@@ -10,20 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180321004253) do
+ActiveRecord::Schema.define(version: 20180321073103) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "runs", force: :cascade do |t|
-    t.string "title"
-    t.date "date"
+    t.string "title", null: false
     t.string "env"
     t.string "tags", array: true
     t.jsonb "data"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "comment"
+    t.datetime "datetime"
+    t.index ["datetime"], name: "index_runs_on_datetime", unique: true
   end
 
   create_table "test", id: false, force: :cascade do |t|

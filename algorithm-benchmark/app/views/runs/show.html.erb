@@ -1,30 +1,44 @@
-Date = <%= @run.date %> <br>
+<div class="row">
+<div class="col-12">
+<h1 style="background-color:blue;">Haha</h1><span class="glyphicon glyphicon-envelope"></span>
+</div>
+</div>
+<div class="row">
+  <div class="col-12 col-lg-3">
+  <span class="glyphicon glyphicon-envelope"></span>
+    Date = <%= @run.datetime %> <br>
 
-Tags: <% @run.tags.each do |tag| %>
-    <%= tag %> 
-<% end %>
-Comment: <%= @run.comment %> 
-<% 
-background = ['rgba(100, 6, 40, 0.6)', 'rgba(150, 6, 40,  0.6)', "rgba(200, 6, 40,  0.6)"]
-sorted_result = @run.data["results"].sort_by { |k, v| v[0]} .reverse %>
+    Tags: <% @run.tags.each do |tag| %>
+        <%= tag %> 
+    <% end %>
+    Comment: <%= @run.comment %> 
+  </div>
+  <div class="col-12 col-lg-9">
+    
+    <% 
+    background = ['rgba(100, 6, 40, 0.6)', 'rgba(150, 6, 40,  0.6)', "rgba(200, 6, 40,  0.6)"]
+    sorted_result = @run.data["results"].sort_by { |k, v| v[0]} .reverse %>
 
-<!-- <%= sorted_result.inspect %> -->
+    <!-- <%= sorted_result.inspect %> -->
 
-<%
-data = {
-  labels: sorted_result.map { |arr| arr[0] },
-  datasets: @run.data["test_cases"].each_with_index.map { |test_case, i| 
-     dataValue = sorted_result.map { |arr| arr[1] } .map {|arr| arr[i]}
-     { label: test_case, backgroundColor: background[i], data: dataValue }
-  }
-} 
-        
-options = { width: "1000px", height: "500px",
-            animation: { duration: 1000, easing: 'easeOutQuint' }, 
-            layout: { padding: { left: 10, right: 0, top: 0, bottom: 0} },
-            title: { text: [@run.title, @run.data["unit"]], font_size: "20", display: true } }
+    <%
+    data = {
+      labels: sorted_result.map { |arr| arr[0] },
+      datasets: @run.data["test_cases"].each_with_index.map { |test_case, i| 
+        dataValue = sorted_result.map { |arr| arr[1] } .map {|arr| arr[i]}
+        { label: test_case, backgroundColor: background[i], data: dataValue }
+      }
+    } 
+            
+    options = { width: "1000px", height: "500px",
+                animation: { duration: 1000, easing: 'easeOutQuint' }, 
+                layout: { padding: { left: 10, right: 0, top: 0, bottom: 0} },
+                title: { text: [@run.title, @run.data["unit"]], font_size: "20", display: true },
+                legend: { display: true } } 
 
-%>
-<div style="width:100%; height:500px">
-<%= horizontal_bar_chart data, options %>
+    %>
+    <div style="width:100%; height:800px">
+    <%= horizontal_bar_chart data, options %>
+    </div>
+  </div>
 </div>
