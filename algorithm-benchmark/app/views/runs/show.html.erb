@@ -1,44 +1,98 @@
-<div class="row">
-<div class="col-12">
-<h1 style="background-color:blue;">Haha</h1><span class="glyphicon glyphicon-envelope"></span>
-</div>
-</div>
-<div class="row">
-  <div class="col-12 col-lg-3">
-  <span class="glyphicon glyphicon-envelope"></span>
-    Date = <%= @run.datetime %> <br>
 
-    Tags: <% @run.tags.each do |tag| %>
-        <%= tag %> 
-    <% end %>
-    Comment: <%= @run.comment %> 
+<div class="container-fluid" style="width:100%">
+  <div class="row">
+    <div class="col-lg-1">   </div>
+     <div class="col-lg-11"> <h1 style="background-color:grey;">Algorithm Benchmarks</h1></div>
   </div>
-  <div class="col-12 col-lg-9">
-    
-    <% 
-    background = ['rgba(100, 6, 40, 0.6)', 'rgba(150, 6, 40,  0.6)', "rgba(200, 6, 40,  0.6)"]
-    sorted_result = @run.data["results"].sort_by { |k, v| v[0]} .reverse %>
+  <div class="row">
+    <div class="col-lg-1">
+  
+    </div>
+    <div class="col-12 col-lg-2">
+        <% titles = { }
+          Run.all.each do |run|   
+            if titles[run.category]
+              titles[run.category].push [run.sub_category, run.id]
+            else 
+              titles[run.category] = [[run.sub_category, run.id]]
+            end
+          end %>
+          
+          <div class="panel-group" id="accordion">
+          <% titles.each_with_index do |(k, v), i| %>             
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse<%= i %>">
+                    <%= k  %></a>
+                  </h4>
+                </div>
+                <div id="collapse<%= i %>" class="panel-collapse collapse in">
+                  <div class="panel-body">
+                    <% v.sort.each do |category, id| %>
+                       <%= category %>: <%= link_to Run.find(id).title, run_path(id) %><br>
+                    <% end %>
+                  </div>
+              </div> 
+              </div>          
+          <% end %>
+          </div>
+          
+          <!--
+         <% Run.all.each do |run|  %>
+          <p><a href="<%= run_path(run) %>"><%= run.datetime %></a><br>
+          Category: <%= run.category %> <br>
+          Sub-category: <%= run.sub_category %><br>
+              <%= link_to 'Delete', run_path(run), method: :delete, 
+          data: { confirm: 'Delete?' } %>
+          </p>
 
-    <!-- <%= sorted_result.inspect %> -->
+        <% end %> -->
 
-    <%
-    data = {
-      labels: sorted_result.map { |arr| arr[0] },
-      datasets: @run.data["test_cases"].each_with_index.map { |test_case, i| 
-        dataValue = sorted_result.map { |arr| arr[1] } .map {|arr| arr[i]}
-        { label: test_case, backgroundColor: background[i], data: dataValue }
-      }
-    } 
-            
-    options = { width: "1000px", height: "500px",
-                animation: { duration: 1000, easing: 'easeOutQuint' }, 
-                layout: { padding: { left: 10, right: 0, top: 0, bottom: 0} },
-                title: { text: [@run.title, @run.data["unit"]], font_size: "20", display: true },
-                legend: { display: true } } 
+    </div>
+    <div class="col-12 col-lg-9">    
+      <% 
+      prng = Random.new
+      $r = prng.rand(0..255)
+      $g = prng.rand(0..255)
+      $b = prng.rand(0..255)
+      $shade_part = prng.rand(0..2) 
+      $shade = [100, 150, 200]
+      $alpha = 0.8
+      def get_rgba_string(i)
+        a = [$r, $g, $b]
+        a[$shade_part] = $shade[i]
+        return "rgba(#{a[0]},#{a[1]}, #{a[2]}, #{$alpha})"
+      end
 
-    %>
-    <div style="width:100%; height:800px">
-    <%= horizontal_bar_chart data, options %>
+      background = [get_rgba_string(0), get_rgba_string(1), get_rgba_string(2)]
+      #sorted_result = @run.data["results"].sort_by { |k, v| v[0]} .reverse 
+      algorithms = @run.data["algorithms"]
+      algorithm_names = algorithms.map { |x| x[0] }
+
+      
+      data = {
+        labels: algorithm_names,
+        datasets: @run.data["test_cases"].each_with_index.map { |test_case, i| 
+          dataValue = @run.data["results"].map {|arr| arr[i]}
+          { label: test_case, backgroundColor: background[i], data: dataValue }
+        }
+      } 
+              
+      options = { width: 1000, height: [600, 100 + algorithms.length * 100].min,
+                  animation: { duration: 1000, easing: 'easeOutQuint' }, 
+                  layout: { padding: { left: 10, right: 0, top: 0, bottom: 0} },
+                  title: { text: [@run.title], font_size: 30, display: true },
+                  legend: { display: true, labels: { font_size: 15 }},
+                  scales: { xAxes: [{ scale_label: { display: true, label_string: @run.data["unit"] }}] } } 
+
+      %>
+      <div style="width:100%; height:1000px">
+
+      <script>Chart.defaults.global.defaultFontSize = 20;
+      Chart.defaults.global.defaultFontColor = 'black';</script>
+      <%= horizontal_bar_chart data, options %>
+      </div>
     </div>
   </div>
-</div>
+  </div>
