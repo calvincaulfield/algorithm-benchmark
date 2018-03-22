@@ -1,6 +1,7 @@
 class RunsController < ApplicationController
   skip_before_action :verify_authenticity_token
-  before_action :use_unsafe_params, only: [:api]
+  #before_action :use_unsafe_params, only: [:api]
+  before_action :use_unsafe_params
 
   def index
     @runs = Run.all
@@ -16,6 +17,8 @@ class RunsController < ApplicationController
 
   def show
     @run = Run.find(params[:id])
+   # render 'show', locals: { filter_tags: params[:filter_tags] }
+    render 'show', locals: { include_tags: params[:include_tags], exclude_tags: params[:exclude_tags] }
   end
 
   def create
@@ -36,10 +39,7 @@ class RunsController < ApplicationController
     #JSON.parse(params)
     #render plain: params[:run]
 
-    raw_params = params[:run]
-    #raw_params[:tags] = JSON.parse(raw_params[:tags])
-    #raw_params[:data] = JSON.parse(raw_params[:data])
-    @run = Run.new(raw_params)
+    @run = Run.new( params[:run])
     @run.save
     #if @run.save
     #	redirect_to runs_path
