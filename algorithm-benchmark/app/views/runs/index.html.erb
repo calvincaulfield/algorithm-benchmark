@@ -11,7 +11,15 @@
     end
 end %>
 
-<div class="container-fluid" style="width:100%">
+<%= javascript_tag do %> 
+    $(document).ready(function() {
+       // $('#container').fadeOut(0);
+       // $('#container').fadeIn();
+    });
+    
+<% end %>
+
+<div id="container" style="visibility:visible" class="container-fluid" style="width:100%">
     <div class="row" style="background-color:#E5E8E8;">
         <div class="col-xs-12"> 
             <a style="text-decoration:none" href="<%= runs_path %>"><h1>Algorithm Benchmarks</h1></a>
@@ -33,7 +41,7 @@ end %>
                 setCookie('shadePart', randomColorSet[3], 1);
             <% end %>
             <% v.each do |sub_category, run_array| %>
-                <% run_array.each do |run| %>
+                <% run_array.sort_by { |x| x.order }.each do |run| %>
                     <div onclick="location.assign('/runs/<%= run.id %>')" class="col-xs-6 col-lg-3">
                         <%= link_to 'Click', run_path(run) %>
                         <canvas id="<%= run.id %>" width="300" height="<%= [300, 80 +50 * run.data["algorithms"].length].min%>"></canvas>
@@ -44,7 +52,7 @@ end %>
                                 JSON.parse('<%= run.data["algorithms"].to_json.html_safe %>'), 
                                 JSON.parse('<%= run.data["results"].to_json.html_safe %>'),  
                                 JSON.parse('<%= run.data["test_cases"].to_json.html_safe %>'), 
-                                "<%= sub_category %>: <%= run.title %>", "<%= run.data["unit"] %>", colorGenerator);  
+                                "<%= run.title %>", "<%= run.data["unit"] %>", colorGenerator, 2000);  
                             myChart.options.legend.labels.fontSize = 10;
                             myChart.options.legend.labels.boxWidth = 20;
                             myChart.options.title.fontSize = 15;

@@ -121,7 +121,7 @@
           Chart.defaults.global.defaultFontSize = 18;
          Chart.defaults.global.defaultFontColor = 'black';
         var myChart = drawChart('myChart', algorithms, results, testCases, 
-              "<%= @run.title %>", "<%=@run.data["unit"]%>", colorGetter);  
+              "<%= @run.title %>", "<%=@run.data["unit"]%>", colorGetter, 2000);  
          
         function updateChart(algorithms, results) {
           myChart.data = getDataOption(algorithms, results, testCases, colorGetter);

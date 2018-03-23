@@ -34,13 +34,13 @@ function getDataOption(algorithms, results, testCases, colorGetter) {
     };
 }
 
-function drawChart(chartId, algorithms, results, testCases, titleString, unitString, colors) {
+function drawChart(chartId, algorithms, results, testCases, titleString, unitString, colors, duration) {
     var ctx = document.getElementById(chartId);
     var myChart = new Chart(ctx, {
         type: 'horizontalBar',
         data: getDataOption(algorithms, results, testCases, colors),
         options: {
-            animation: { duration: 2000, easing: 'easeOutQuint' },
+            animation: { duration: duration, easing: 'easeOutQuint' },
             legend: { display: true, labels: { fontSize: 15, boxWidth: 40 } },
             scales: { xAxes: [{ scaleLabel: { display: true, labelString: unitString } }] },
             title: { text: titleString, fontSize: 25, display: true },
