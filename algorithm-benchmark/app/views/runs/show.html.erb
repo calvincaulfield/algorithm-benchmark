@@ -38,7 +38,9 @@
                        <ul>
                        <% ids.each do |id| %>
                         <li><%= link_to Run.find(id).title, run_path(id) %>
-                        <%= link_to '(x)', run_path(id), method: :delete, data: { confirm: 'Delete? ' + id.to_s } %>
+                        <% if request.host == admin_url %>
+                          <%= link_to '(x)', run_path(id), method: :delete, data: { confirm: 'Delete? ' + id.to_s } %>
+                          <% end %>
                         </li>
                        <% end %>    
                        </ul>                   
