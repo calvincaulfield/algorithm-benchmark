@@ -25,11 +25,11 @@
           <div class="panel-group" id="accordion">
           <% titles.each_with_index do |(k, v), i| %>             
               <div class="panel panel-default">
-                <div class="panel-heading">
-                  <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse<%= i %>">
-                    <%= k  %></a>
-                  </h4>
+                <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#collapse<%= i %>">
+                  
+                    <a ><h4 class="panel-title">
+                    <%= k  %></a></h4>
+                  
                 </div>
                 <div id="collapse<%= i %>" class="panel-collapse collapse in">
                   <div class="panel-body">
@@ -37,7 +37,9 @@
                        <h4><%= sub_category %></h4> 
                        <ul>
                        <% ids.each do |id| %>
-                        <li><%= link_to Run.find(id).title, run_path(id) %></li>
+                        <li><%= link_to Run.find(id).title, run_path(id) %>
+                        <%= link_to '(x)', run_path(id), method: :delete, data: { confirm: 'Delete? ' + id.to_s } %>
+                        </li>
                        <% end %>    
                        </ul>                   
                     <% end %>
@@ -47,17 +49,6 @@
           <% end %>
           </div>
           
-          <!--
-         <% Run.all.each do |run|  %>
-          <p><a href="<%= run_path(run) %>"><%= run.datetime %></a><br>
-          Category: <%= run.category %> <br>
-          Sub-category: <%= run.sub_category %><br>
-              <%= link_to 'Delete', run_path(run), method: :delete, 
-          data: { confirm: 'Delete?' } %>
-          </p>
-
-        <% end %> -->
-
     </div>
     <div class="col-xs-12 col-lg-2">   
       <h4>Filter by tags</h4>
@@ -69,9 +60,32 @@
           end
         end
       %>
-      Parameters
-      <%= local_assigns[:include_tags].inspect  %>
-     <%= local_assigns[:exclude_tags].inspect%>
+
+       <%= javascript_tag do %>    
+        function uncheck(id) {
+          document.getElementById(id).checked = false;
+        }
+
+        function filter() {
+          var include_tag_elems = Array.from(document.getElementsByClassName("include_tags"));
+          include_tag_elems = include_tag_elems.filter(e => e.checked)
+          var include_tags = include_tag_elems.map(e => e.id.substring('include-'.length));
+
+          var exclude_tag_elems = Array.from(document.getElementsByClassName("exclude_tags"));
+          exclude_tag_elems = exclude_tag_elems.filter(e => e.checked)
+          var exclude_tags = exclude_tag_elems.map(e => e.id.substring('exclude-'.length));
+
+          var selectedIndex = algorithms.map(function(nameAndTags) {
+            var tags = nameAndTags.slice(1);
+            var toSelect = include_tags.every(e => tags.includes(e)) && 
+                            exclude_tags.every(e => !tags.includes(e));
+            return toSelect;
+          });
+          updateChart(algorithms.filter(function(v, i) { return selectedIndex[i]; }),
+                     results.filter(function(v, i) { return selectedIndex[i]; }));
+        }
+       <% end %>
+
       <table class="table">
         <thead>
         <th></th><th>include</th><th>exclude</th>
@@ -79,64 +93,66 @@
         <tbody>
           <% all_tags.each do |t, v| %>
           <tr><td><%= t %></td>
-          <td><input type="checkbox" value=""></td>
-          <td><input type="checkbox" value=""></td></tr>
+          <td><input id="<%= 'include-' + t %>" onclick="uncheck('<%= 'exclude-' + t %>');filter();"" type="checkbox" class="include_tags" value="<%= t %>" </td>
+          <td><input id="<%= 'exclude-' + t %>" onclick="uncheck('<%= 'include-' + t %>');filter();" type="checkbox" class="exclude_tags" value="<%= t %>"</td></tr>
          <% end %>
         </tbody>
       </table>
-      <%= link_to 'Apply filter', run_path(@run, action: 'show', include_tags:["a", "b"], exclude_tags:["c", "d"]) %>
-      <!--
-      <div class="list-group">
-        <% all_tags.each do |t, v| %>
-          <button type="button" class="list-group-item" > <%= t %></button>
-        <% end %>
-      </div> -->
+  
+      <!-- <button onclick="filter();"  class="btn btn-info" style="width:100%">Apply filter</button> -->
+
     </div>
-    <div class="col-xs-12 col-lg-8">    
-      <% 
-      prng = Random.new
-      $r = prng.rand(0..255)
-      $g = prng.rand(0..255)
-      $b = prng.rand(0..255)
-      $shade_part = prng.rand(0..2) 
-      $shade = [100, 150, 200]
-      $alpha = 0.8
-      def get_rgba_string(i)
-        a = [$r, $g, $b]
-        a[$shade_part] = $shade[i]
-        return "rgba(#{a[0]},#{a[1]}, #{a[2]}, #{$alpha})"
-      end
+    <div class="col-xs-12 col-lg-8">   
+      <canvas id="myChart" width="800" height="<%= [800, 50 + 50 * @run.data["algorithms"].length].min %>"></canvas>
+      <%= javascript_tag do %>      
+        var algorithms = JSON.parse('<%= @run.data["algorithms"].to_json.html_safe %>')
+        var results = JSON.parse('<%= @run.data["results"].to_json.html_safe %>')
+        var testCases = JSON.parse('<%= @run.data["test_cases"].to_json.html_safe %>')
 
-      background = [get_rgba_string(0), get_rgba_string(1), get_rgba_string(2)]
-      #sorted_result = @run.data["results"].sort_by { |k, v| v[0]} .reverse 
-      algorithms = @run.data["algorithms"]
-      algorithm_names = algorithms.map { |x| x[0] }
-
-      
-      data = {
-        labels: algorithm_names,
-        datasets: @run.data["test_cases"].each_with_index.map { |test_case, i| 
-          dataValue = @run.data["results"].map {|arr| arr[i]}
-          { label: test_case, backgroundColor: background[i], data: dataValue }
+        var shadePart = Math.floor(Math.random() * testCases.length); 
+        var red = Math.floor(Math.random() * 256); 
+        var green = Math.floor(Math.random() * 256); 
+        var blue = Math.floor(Math.random() * 256); 
+        var shades = [];
+        for (var i = 0; i < testCases.length; i++) {
+          shades.push(100 + 100 * i / (testCases.length - 1))
         }
-      } 
-              
-      options = {  width: 800, height: [800, 50 + 50 * @run.data["algorithms"].length].min,
-                  animation: { duration: 1000, easing: 'easeOutQuint' }, 
-                  layout: { padding: { left: 0, right: 0, top: 0, bottom: 0} },
-                  title: { text: [@run.title], font_size: 30, display: true },
-                  legend: { display: true, labels: { font_size: 15 }},
-                  scales: { xAxes: [{ scale_label: { display: true, label_string: @run.data["unit"] }}] },
-                  maintain_aspect_ratio: true } 
+        var alpha = 0.8;
+        function getColor(i) {
+          var colors = [red, green, blue];
+          colors[shadePart] = shades[i];
+          return `rgba(${colors[0]}, ${colors[1]}, ${colors[2]}, ${alpha})`
+        }
 
-      %>
+        function getDataOption(algorithms, results) {
+          return {
+                labels: algorithms.map(arr => arr[0]),
+                datasets: testCases.map(function(test_case, i) { 
+                  return { label: test_case, backgroundColor: getColor(i), data: results.map(arr => arr[i])}} )          
+            };
+        }
 
-      <script>Chart.defaults.global.defaultFontSize = 15;     
-      Chart.defaults.global.defaultFontColor = 'black';     
-      </script>
-       <div>
-        <%= horizontal_bar_chart data, options %>
-      </div>
+        Chart.defaults.global.defaultFontSize = 15;     
+        Chart.defaults.global.defaultFontColor = 'black';  
+        var ctx = document.getElementById("myChart");
+        var myChart = new Chart(ctx, {
+            type: 'horizontalBar',
+            data: getDataOption(algorithms, results),
+            options: { animation: { duration: 2000, easing: 'easeOutQuint' }, 
+                      legend: { display: true, labels: { fontSize: 15 }},
+                      scales: { xAxes: [{ scaleLabel: { display: true, labelString: "<%=@run.data["unit"]%>" }}] },
+                      title: { text: "<%= @run.title %>", font_size: 30, display: true },
+                      layout: { padding: { left: 0, right: 0, top: 0, bottom: 0} } } 
+        });   
+         
+        function updateChart(algorithms, results) {
+          //alert(algorithms);
+          myChart.data = getDataOption(algorithms, results);
+
+          myChart.update();
+        }       
+      <% end %>
+
       <script> 
       </script>
     </div>
