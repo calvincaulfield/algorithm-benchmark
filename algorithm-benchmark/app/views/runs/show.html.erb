@@ -63,7 +63,11 @@
         end
       %>
 
-       <%= javascript_tag do %>    
+       <%= javascript_tag do %>  
+        var algorithms = JSON.parse('<%= @run.data["algorithms"].to_json.html_safe %>'); 
+        var results = JSON.parse('<%= @run.data["results"].to_json.html_safe %>');
+        var testCases = JSON.parse('<%= @run.data["test_cases"].to_json.html_safe %>');
+
         function uncheck(id) {
           document.getElementById(id).checked = false;
         }
@@ -106,57 +110,16 @@
     </div>
     <div class="col-xs-12 col-lg-8">   
       <canvas id="myChart" width="800" height="<%= [800, 50 + 50 * @run.data["algorithms"].length].min %>"></canvas>
-      <%= javascript_tag do %>      
-        var algorithms = JSON.parse('<%= @run.data["algorithms"].to_json.html_safe %>')
-        var results = JSON.parse('<%= @run.data["results"].to_json.html_safe %>')
-        var testCases = JSON.parse('<%= @run.data["test_cases"].to_json.html_safe %>')
-
-        var shadePart = Math.floor(Math.random() * testCases.length); 
-        var red = Math.floor(Math.random() * 256); 
-        var green = Math.floor(Math.random() * 256); 
-        var blue = Math.floor(Math.random() * 256); 
-        var shades = [];
-        for (var i = 0; i < testCases.length; i++) {
-          shades.push(100 + 100 * i / (testCases.length - 1))
-        }
-        var alpha = 0.8;
-        function getColor(i) {
-          var colors = [red, green, blue];
-          colors[shadePart] = shades[i];
-          return `rgba(${colors[0]}, ${colors[1]}, ${colors[2]}, ${alpha})`
-        }
-
-        function getDataOption(algorithms, results) {
-          return {
-                labels: algorithms.map(arr => arr[0]),
-                datasets: testCases.map(function(test_case, i) { 
-                  return { label: test_case, backgroundColor: getColor(i), data: results.map(arr => arr[i])}} )          
-            };
-        }
-
-        Chart.defaults.global.defaultFontSize = 15;     
-        Chart.defaults.global.defaultFontColor = 'black';  
-        var ctx = document.getElementById("myChart");
-        var myChart = new Chart(ctx, {
-            type: 'horizontalBar',
-            data: getDataOption(algorithms, results),
-            options: { animation: { duration: 2000, easing: 'easeOutQuint' }, 
-                      legend: { display: true, labels: { fontSize: 15 }},
-                      scales: { xAxes: [{ scaleLabel: { display: true, labelString: "<%=@run.data["unit"]%>" }}] },
-                      title: { text: "<%= @run.title %>", font_size: 30, display: true },
-                      layout: { padding: { left: 0, right: 0, top: 0, bottom: 0} } } 
-        });   
+      <%= javascript_tag do %>  
+        var myChart = drawChart('myChart', algorithms, results, testCases, 
+              "<%= @run.title %>", "<%=@run.data["unit"]%>");  
          
         function updateChart(algorithms, results) {
-          //alert(algorithms);
-          myChart.data = getDataOption(algorithms, results);
-
+          myChart.data = getDataOption(algorithms, results, testCases);
           myChart.update();
         }       
       <% end %>
 
-      <script> 
-      </script>
     </div>
   </div>
 

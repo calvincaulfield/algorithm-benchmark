@@ -5,5 +5,5 @@ Rails.application.routes.draw do
   post '/runs/api', to: 'runs#api' 
 
 
-  root 'runs#new'
+  root 'runs#index'
 end
