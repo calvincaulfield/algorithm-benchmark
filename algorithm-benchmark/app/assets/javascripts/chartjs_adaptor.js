@@ -1,49 +1,51 @@
 
-function getRancomColors(num) {
-    var shadePart = Math.floor(Math.random() * num);
+function getRandomColorGenerator() {
+    var colorsAndShadePart = getRandomColorSet();
+    return getColorGenerator(colorsAndShadePart);
+}
+
+function getRandomColorSet() {
+    var shadePart = Math.floor(Math.random() * 3);
     var red = Math.floor(Math.random() * 256);
     var green = Math.floor(Math.random() * 256);
     var blue = Math.floor(Math.random() * 256);
-    var shades = [];
-    for (var i = 0; i < num; i++) {
-        shades.push(100 + 100 * i / (num - 1))
-    }
-    var alpha = 0.8;
-    function getColor(i) {
-        var colors = [red, green, blue];
-        colors[shadePart] = shades[i];
-        return `rgba(${colors[0]}, ${colors[1]}, ${colors[2]}, ${alpha})`
-    }
-    var result = [];
-    for (var i = 0; i < num; i++) {
-        result.push(i);
-    }
-    return result.map(e => getColor(e));
+    return [red, green, blue, shadePart];   
 }
 
-function getDataOption(algorithms, results, testCases) {
-    var colors = getRancomColors(testCases.length);
+function getColorGenerator(colorsAndShadePart) {
+    return function() {
+        var shades = [100, 200];    
+        var alpha = 0.8;
+        var colors = colorsAndShadePart.slice(0, 3);
+        var shadePart = colorsAndShadePart[3];
+        return function (ratio) {  
+            colors[shadePart] = shades[0] + ratio * (shades[1] - shades[0]);          
+            return `rgba(${colors[0]}, ${colors[1]}, ${colors[2]}, ${alpha})`
+        };
+    }();
+}
+
+function getDataOption(algorithms, results, testCases, colorGetter) {
     return {
         labels: algorithms.map(arr => arr[0]),
         datasets: testCases.map(function (test_case, i) {                
-            return { label: test_case, backgroundColor: colors[i], data: results.map(arr => arr[i]) }
+            return { label: test_case, backgroundColor: colorGetter(1.0 * i / (testCases.length - 1)), data: results.map(arr => arr[i]) }
         })
     };
 }
 
-function drawChart(chartId, algorithms, results, testCases, titleString, unitString) {
-    Chart.defaults.global.defaultFontSize = 15;
-    Chart.defaults.global.defaultFontColor = 'black';
+function drawChart(chartId, algorithms, results, testCases, titleString, unitString, colors) {
     var ctx = document.getElementById(chartId);
     var myChart = new Chart(ctx, {
         type: 'horizontalBar',
-        data: getDataOption(algorithms, results, testCases),
+        data: getDataOption(algorithms, results, testCases, colors),
         options: {
             animation: { duration: 2000, easing: 'easeOutQuint' },
-            legend: { display: true, labels: { fontSize: 15 } },
+            legend: { display: true, labels: { fontSize: 15, boxWidth: 40 } },
             scales: { xAxes: [{ scaleLabel: { display: true, labelString: unitString } }] },
-            title: { text: titleString, font_size: 30, display: true },
-            layout: { padding: { left: 0, right: 0, top: 0, bottom: 0 } }
+            title: { text: titleString, fontSize: 25, display: true },
+            layout: { padding: { left: 0, right: 0, top: 0, bottom: 0 },
+            maintainAspectRatio: true }
         }
     });
     return myChart;

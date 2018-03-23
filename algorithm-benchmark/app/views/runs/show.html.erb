@@ -2,28 +2,30 @@
 <div class="container-fluid" style="width:100%">
   <div class="row" style="background-color:#E5E8E8;">
       <div class="col-xs-12"> 
-      <div><h1 >Algorithm Benchmarks</h1></div>
+      <a style="text-decoration:none" href="<%= runs_path %>"><h1>Algorithm Benchmarks</h1></a>
      </div>
 
   </div>
   <div class="row" style="padding:30px 0">
     <div class="col-xs-12 col-lg-2">
      <h4>Select a benchmark</h4>
-        <% titles = { }
+        <% hierarchy = { }
           Run.all.each do |run|   
-            if titles[run.category]
-              if titles[run.category][run.sub_category] 
-                titles[run.category][run.sub_category].push run.id
+            if hierarchy[run.category]
+              if hierarchy[run.category][run.sub_category] 
+                hierarchy[run.category][run.sub_category].push run.id
               else
-                titles[run.category][run.sub_category] = [run.id]
+                hierarchy[run.category][run.sub_category] = [run.id]
               end
             else 
-              titles[run.category] = {run.sub_category => [run.id] }
+              hierarchy[run.category] = {run.sub_category => [run.id] }
             end
+
+
           end %>
           
           <div class="panel-group" id="accordion">
-          <% titles.each_with_index do |(k, v), i| %>             
+          <% hierarchy.each_with_index do |(k, v), i| %>             
               <div class="panel panel-default">
                 <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#collapse<%= i %>">
                   
@@ -67,7 +69,12 @@
         var algorithms = JSON.parse('<%= @run.data["algorithms"].to_json.html_safe %>'); 
         var results = JSON.parse('<%= @run.data["results"].to_json.html_safe %>');
         var testCases = JSON.parse('<%= @run.data["test_cases"].to_json.html_safe %>');
-
+        if (getCookie('r')) {
+          var colorGetter = getColorGenerator([getCookie('r'), getCookie('g'), getCookie('b'), getCookie('shadePart')]);
+          setCookie('r', '', 1);
+        } else {
+          var colorGetter = getRandomColorGenerator();
+        }
         function uncheck(id) {
           document.getElementById(id).checked = false;
         }
@@ -109,13 +116,15 @@
 
     </div>
     <div class="col-xs-12 col-lg-8">   
-      <canvas id="myChart" width="800" height="<%= [800, 50 + 50 * @run.data["algorithms"].length].min %>"></canvas>
+      <canvas id="myChart" width="800" height="<%= [600, 50 + 50 * @run.data["algorithms"].length].min %>"></canvas>
       <%= javascript_tag do %>  
+          Chart.defaults.global.defaultFontSize = 18;
+         Chart.defaults.global.defaultFontColor = 'black';
         var myChart = drawChart('myChart', algorithms, results, testCases, 
-              "<%= @run.title %>", "<%=@run.data["unit"]%>");  
+              "<%= @run.title %>", "<%=@run.data["unit"]%>", colorGetter);  
          
         function updateChart(algorithms, results) {
-          myChart.data = getDataOption(algorithms, results, testCases);
+          myChart.data = getDataOption(algorithms, results, testCases, colorGetter);
           myChart.update();
         }       
       <% end %>
