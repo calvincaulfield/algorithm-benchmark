@@ -42,7 +42,9 @@ function drawChart(chartId, algorithms, results, testCases, titleString, unitStr
         options: {
             animation: { duration: duration, easing: 'easeOutQuint' },
             legend: { display: true, labels: { fontSize: 15, boxWidth: 40 } },
-            scales: { xAxes: [{ scaleLabel: { display: true, labelString: unitString } }] },
+            scales: { xAxes: [{ scaleLabel: { display: true, labelString: unitString }, ticks: {
+                beginAtZero:true
+            }}] },
             title: { text: titleString, fontSize: 25, display: true },
             layout: { padding: { left: 0, right: 0, top: 0, bottom: 0 },
             maintainAspectRatio: true }
