@@ -32,7 +32,7 @@ end %>
             </div>  
         </div>
         <div class="row">
-        <div class="col-xs-12"> 
+         
             <%= javascript_tag do %> 
                 var randomColorSet = getRandomColorSet();
                 var colorGenerator = getColorGenerator(randomColorSet);
@@ -41,15 +41,14 @@ end %>
                 setCookie('b', randomColorSet[2], 1);
                 setCookie('shadePart', randomColorSet[3], 1);
             <% end %>
+
+            <% num_cols = 4
+                vw_size = 80 / num_cols 
+                bootstrap_arg = 12 / num_cols %>
             <% v.each do |sub_category, run_array| %>
                 <% run_array.sort_by { |x| x.order }.each_with_index do |run, i| %>
-                    <% num_cols = 5 
-                       col_percent = ((100 - 5) / num_cols).floor %>
-                    <% if i % num_cols == 0 %>
-                        <div style="width:100%, height: 500px;">
-                        <div style="width:1%;height:20%;float:left;"> <br></div>
-                    <% end %>
-                        <div style="width:<%= col_percent %>%;height:<%= col_percent %>%;float:left;" onclick="location.assign('/runs/<%= run.id %>')">
+                    <div class="col-xs-<%= bootstrap_arg %>">
+                        <div style="width:<%= vw_size %>vw;" onclick="location.assign('/runs/<%= run.id %>')">
                             <canvas id="<%= run.id %>" width="300" height="300"></canvas>
                             <%= javascript_tag do %>  
                                 Chart.defaults.global.defaultFontSize = 10;                            
@@ -66,13 +65,10 @@ end %>
                                     
                             <% end %>
                         </div>
-                     <% if i % num_cols == num_cols - 1 || i == run_array.length - 1 %>
-                        <div style="clear:both"></div>
-                        </div>
-                    <% end %>                   
+                    </div>
                 <% end %> 
             <% end %>
-        </div>
+        
         </div> 
     <% end %>
 </div>
