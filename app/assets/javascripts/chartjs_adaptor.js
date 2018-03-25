@@ -25,20 +25,39 @@ function getColorGenerator(colorsAndShadePart) {
     }();
 }
 
-function getDataOption(algorithms, results, testCases, colorGetter) {
+function getDataOption(algorithms, results, testCases, colorGetter, chartType) {
+    if (chartType == "line") {
+        // line chart should transpose axis
+        var temp = algorithms.map(function(e){ return e[0]; });
+        algorithms = testCases.map(function(e){ return [e]; });
+        testCases = temp;
+        //alert(JSON.stringify(algorithms));
+       // alert(JSON.stringify(testCases));
+        var newResults = [];
+        while (results[0].length > 0) {
+            var tempRow = [];
+            for (var j = 0; j < results.length; j++) {
+                tempRow.push(results[j].shift());
+            }    
+            newResults.push(tempRow);           
+        }
+        results = newResults;
+       // alert(JSON.stringify(results));
+    }
+
     return {
         labels: algorithms.map(arr => arr[0]),
         datasets: testCases.map(function (test_case, i) {                
-            return { label: test_case, backgroundColor: colorGetter(1.0 * i / (testCases.length - 1)), data: results.map(arr => arr[i]) }
+            return { fill: false, label: test_case, backgroundColor: colorGetter(1.0 * i / (testCases.length - 1)), data: results.map(arr => arr[i]) }
         })
     };
 }
 
-function drawChart(chartId, algorithms, results, testCases, titleString, unitString, colors, duration) {
+function drawChart(chartId, algorithms, results, testCases, titleString, unitString, colors, duration, chartType) {
     var ctx = document.getElementById(chartId);
     var myChart = new Chart(ctx, {
-        type: 'horizontalBar',
-        data: getDataOption(algorithms, results, testCases, colors),
+        type: chartType,
+        data: getDataOption(algorithms, results, testCases, colors, chartType),
         options: {
             animation: { duration: duration, easing: 'easeOutQuint' },
             legend: { display: true, labels: { fontSize: 15, boxWidth: 40 } },

@@ -26,13 +26,12 @@ end %>
         </div>
     </div>
     <% hierarchy.each do |category, v| %>
-        <div class="row" style="padding:20px 0; border-bottom:solid 1px ;">
+        <div class="row" style="padding:0px 0; border-bottom:solid 1px ;">
             <div class="col-xs-12">
                 <h2 style="color:#626567;"><%= category %></h2>
             </div>  
         </div>
-        <div class="row">
-         
+        <div class="row" style="margin-bottom: 20px;">         
             <%= javascript_tag do %> 
                 var randomColorSet = getRandomColorSet();
                 var colorGenerator = getColorGenerator(randomColorSet);
@@ -47,17 +46,20 @@ end %>
                 bootstrap_arg = 12 / num_cols %>
             <% v.each do |sub_category, run_array| %>
                 <% run_array.sort_by { |x| x.order }.each_with_index do |run, i| %>
+                    <% chart_type = "horizontalBar"
+                        if run.category == "Paiza problems" then chart_type = "line" end %>
                     <div class="col-xs-<%= bootstrap_arg %>">
                         <div style="width:<%= vw_size %>vw;" onclick="location.assign('/runs/<%= run.id %>')">
                             <canvas id="<%= run.id %>" width="300" height="300"></canvas>
                             <%= javascript_tag do %>  
                                 Chart.defaults.global.defaultFontSize = 10;                            
                                 //Chart.options. = false;
+                                var chartType = "<%= chart_type %>";
                                 var myChart = drawChart("<%= run.id %>", 
                                     JSON.parse('<%= run.data["algorithms"].to_json.html_safe %>'), 
                                     JSON.parse('<%= run.data["results"].to_json.html_safe %>'),  
                                     JSON.parse('<%= run.data["test_cases"].to_json.html_safe %>'), 
-                                    "<%= run.title %>", "<%= run.data["unit"] %>", colorGenerator, 2000);  
+                                    "<%= run.title %>", "<%= run.data["unit"] %>", colorGenerator, 2000, chartType);  
                                 myChart.options.legend.labels.fontSize = 10;
                                 myChart.options.legend.labels.boxWidth = 20;
                                 myChart.options.title.fontSize = 15;

@@ -8,17 +8,17 @@
   </div>
   <div class="row" style="padding:30px 0">
     <div class="col-xs-12 col-lg-2">
-     <h4>Select a benchmark</h4>
+     <h3>Select a benchmark</h3>
         <% hierarchy = { }
           Run.all.each do |run|   
             if hierarchy[run.category]
               if hierarchy[run.category][run.sub_category] 
-                hierarchy[run.category][run.sub_category].push run.id
+                hierarchy[run.category][run.sub_category].push run
               else
-                hierarchy[run.category][run.sub_category] = [run.id]
+                hierarchy[run.category][run.sub_category] = [run]
               end
             else 
-              hierarchy[run.category] = {run.sub_category => [run.id] }
+              hierarchy[run.category] = {run.sub_category => [run] }
             end
 
 
@@ -27,21 +27,18 @@
           <div class="panel-group" id="accordion">
           <% hierarchy.each_with_index do |(k, v), i| %>             
               <div class="panel panel-default">
-                <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#collapse<%= i %>">
-                  
-                    <a ><h4 class="panel-title">
-                    <%= k  %></a></h4>
-                  
+                <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#collapse<%= i %>">                  
+                    <a><div class="panel-title"><%= k  %></div></a>                
                 </div>
                 <div id="collapse<%= i %>" class="panel-collapse collapse in">
                   <div class="panel-body">
-                    <% v.each do |sub_category, ids| %>
-                       <h4><%= sub_category %></h4> 
+                    <% v.each do |sub_category, runs| %>
+                       <strong><%= sub_category %></strong> 
                        <ul>
-                       <% ids.each do |id| %>
-                        <li><%= link_to Run.find(id).title, run_path(id) %>
+                       <% runs.sort_by { |x| x.order } .each do |run| %>
+                        <li><%= link_to run.title, run_path(run) %>
                         <% if request.host == admin_url %>
-                          <%= link_to '(x)', run_path(id), method: :delete, data: { confirm: 'Delete? ' + id.to_s } %>
+                          <%= link_to '(x)', run_path(run), method: :delete, data: { confirm: 'Delete? ' + run.id.to_s } %>
                           <% end %>
                         </li>
                        <% end %>    
@@ -55,7 +52,7 @@
           
     </div>
     <div class="col-xs-12 col-lg-2">   
-      <h4>Filter by tags</h4>
+      <h3>Filter by tags</h3>
       <% all_tags = { } 
         @run.data["algorithms"].each do |tags|
           temp = tags[1..tags.length]
@@ -64,8 +61,10 @@
           end
         end
       %>
-
+      <% chart_type = "horizontalBar"
+        if @run.category == "Paiza problems" then chart_type = "line" end %>
        <%= javascript_tag do %>  
+        var chartType = "<%= chart_type %>";
         var algorithms = JSON.parse('<%= @run.data["algorithms"].to_json.html_safe %>'); 
         var results = JSON.parse('<%= @run.data["results"].to_json.html_safe %>');
         var testCases = JSON.parse('<%= @run.data["test_cases"].to_json.html_safe %>');
@@ -116,15 +115,15 @@
 
     </div>
     <div class="col-xs-12 col-lg-8">   
-      <canvas id="myChart" width="800" height="<%= [600, 50 + 50 * @run.data["algorithms"].length].min %>"></canvas>
+      <canvas id="myChart" width="800" height="<%= [[600, 50 + 50 * @run.data["algorithms"].length].min, 400].max %>"></canvas>
       <%= javascript_tag do %>  
           Chart.defaults.global.defaultFontSize = 18;
          Chart.defaults.global.defaultFontColor = 'black';
         var myChart = drawChart('myChart', algorithms, results, testCases, 
-              "<%= @run.title %>", "<%=@run.data["unit"]%>", colorGetter, 2000);  
-         
+              "<%= @run.title %>", "<%=@run.data["unit"]%>", colorGetter, 2000, chartType);  
+
         function updateChart(algorithms, results) {
-          myChart.data = getDataOption(algorithms, results, testCases, colorGetter);
+          myChart.data = getDataOption(algorithms, results, testCases, colorGetter, chartType);
           myChart.update();
         }       
       <% end %>
