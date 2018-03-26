@@ -47,8 +47,14 @@ function getDataOption(algorithms, results, testCases, colorGetter, chartType) {
 
     return {
         labels: algorithms.map(arr => arr[0]),
-        datasets: testCases.map(function (test_case, i) {                
-            return { fill: false, label: test_case, backgroundColor: colorGetter(1.0 * i / (testCases.length - 1)), data: results.map(arr => arr[i]) }
+        datasets: testCases.map(function (test_case, i) {   
+            if (testCases.length == 1) {
+                var ratio = 0;
+            } else {
+                var ratio = 1.0 * i / (testCases.length - 1); 
+            }
+                    
+            return { fill: false, label: test_case, backgroundColor: colorGetter(ratio), data: results.map(arr => arr[i]) }
         })
     };
 }

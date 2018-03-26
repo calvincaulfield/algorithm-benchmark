@@ -36,7 +36,7 @@
                        <strong><%= sub_category %></strong> 
                        <ul>
                        <% runs.sort_by { |x| x.order } .each do |run| %>
-                        <li><%= link_to run.title, run_path(run) %>
+                        <li style="list-style-type:none"><%= link_to run.title, run_path(run) %>
                         <% if request.host == admin_url %>
                           <%= link_to '(x)', run_path(run), method: :delete, data: { confirm: 'Delete? ' + run.id.to_s } %>
                           <% end %>
@@ -62,7 +62,7 @@
         end
       %>
       <% chart_type = "horizontalBar"
-        if @run.category == "Paiza problems" then chart_type = "line" end %>
+        if @run.category == "Paiza" then chart_type = "line" end %>
        <%= javascript_tag do %>  
         var chartType = "<%= chart_type %>";
         var algorithms = JSON.parse('<%= @run.data["algorithms"].to_json.html_safe %>'); 
@@ -115,7 +115,7 @@
 
     </div>
     <div class="col-xs-12 col-lg-8">   
-      <canvas id="myChart" width="800" height="<%= [[600, 50 + 50 * @run.data["algorithms"].length].min, 400].max %>"></canvas>
+      <canvas id="myChart" width="800" height="<%= [[500, 50 + 50 * @run.data["algorithms"].length].min, 400].max %>"></canvas>
       <%= javascript_tag do %>  
           Chart.defaults.global.defaultFontSize = 18;
          Chart.defaults.global.defaultFontColor = 'black';
