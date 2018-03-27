@@ -69,6 +69,10 @@ class RunsController < ApplicationController
     @_dangerous_params || super
   end
 
+  def testFunc
+    return 1
+  end
+
   private
 
   def run_params

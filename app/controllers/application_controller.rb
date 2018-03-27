@@ -6,5 +6,7 @@ class ApplicationController < ActionController::Base
   def admin_url
     "dev-bench.minami.im"
   end
-
+  def test_func
+    return 1
+  end
 end

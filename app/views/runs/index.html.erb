@@ -1,23 +1,8 @@
-<% hierarchy = { }
-    @runs.each do |run|   
-        if hierarchy[run.category]
-            if hierarchy[run.category][run.sub_category] 
-                hierarchy[run.category][run.sub_category].push run
-            else
-                hierarchy[run.category][run.sub_category] = [run]
-            end
-        else 
-            hierarchy[run.category] = {run.sub_category => [run] }
-        end
-    end 
+<% 
 
-    hierarchy = hierarchy.sort_by { |k,v| if k == "Sorting" then 0 elsif k == "Container" then 2 else 3 end }.to_h
-    categories = hierarchy.keys
-
-    def get_key_from_subcategory(input)
-        capture = input.scan(/[1-9]?[0-9]/).last.to_i      
-        return capture
-    end
+    hierarchy = get_hierarchy(@runs)
+    categories = hierarchy.keys 
+   
 %>
 
 <%= javascript_tag do %> 
@@ -58,7 +43,7 @@
             vw_size = 80 / num_cols 
             bootstrap_arg = 12 / num_cols %>
 
-        <% v.sort_by {|(e1,e2)| get_key_from_subcategory(e1) } .each do |sub_category, run_array| %>
+        <% v.each do |sub_category, run_array| %>
         <div class="row" style="margin-top: 10px;margin-bottom: 20px;">    
             <%= javascript_tag do %> 
                 var randomColorSet = getRandomColorSet();

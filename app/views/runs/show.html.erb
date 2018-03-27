@@ -9,34 +9,26 @@
   <div class="row" style="padding:30px 0">
     <div class="col-xs-12 col-lg-2">
      <h3>Select a benchmark</h3>
-        <% hierarchy = { }
-          Run.all.each do |run|   
-            if hierarchy[run.category]
-              if hierarchy[run.category][run.sub_category] 
-                hierarchy[run.category][run.sub_category].push run
-              else
-                hierarchy[run.category][run.sub_category] = [run]
-              end
-            else 
-              hierarchy[run.category] = {run.sub_category => [run] }
-            end
+        <% hierarchy = get_hierarchy(Run.all)
+          current_category = @run.category
 
-
-          end %>
+           %>
           
           <div class="panel-group" id="accordion">
           <% hierarchy.each_with_index do |(k, v), i| %>             
               <div class="panel panel-default">
-                <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#collapse<%= i %>">                  
-                    <a><div class="panel-title"><%= k  %></div></a>                
+                <div style="cursor:pointer;" class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#collapse<%= i %>">                  
+                    <a style="text-decoration: none;"><div class="panel-title"><%= k  %></div></a>                
                 </div>
-                <div id="collapse<%= i %>" class="panel-collapse collapse in">
+                <div id="collapse<%= i %>" class="panel-collapse collapse <%= if k == current_category then 'in' else '' end %>">
                   <div class="panel-body">
                     <% v.each do |sub_category, runs| %>
                        <strong><%= sub_category %></strong> 
                        <ul>
                        <% runs.sort_by { |x| x.order } .each do |run| %>
-                        <li style="list-style-type:none"><%= link_to run.title, run_path(run) %>
+                        <li style="list-style-type:none">                         
+                          <a style="color:<%= if run.id == @run.id then 'red' else 'black' end %>" 
+                            href="<%= run_path(run) %>"><%= run.title %></a>
                         <% if request.host == admin_url %>
                           <%= link_to '(x)', run_path(run), method: :delete, data: { confirm: 'Delete? ' + run.id.to_s } %>
                           <% end %>
