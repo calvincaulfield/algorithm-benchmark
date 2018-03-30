@@ -13,6 +13,9 @@ def get_category_order(category)
 end 
 
 def get_key_from_subcategory(input)
+    if input.include? 'drop'
+        return 1000
+    end
     capture = input.scan(/[1-9]?[0-9]/).first.to_i      
     return capture
 end
