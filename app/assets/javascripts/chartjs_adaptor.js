@@ -54,7 +54,7 @@ function getDataOption(algorithms, results, testCases, colorGetter, chartType) {
                 var ratio = 1.0 * i / (testCases.length - 1);
             }
             if (chartType == "line") {
-                return { fill: true, pointRadius: 10, label: test_case, backgroundColor: colorGetter(ratio, 0.5), data: results.map(arr => arr[i]) };
+                return { fill: true, pointRadius: 5, label: test_case, backgroundColor: colorGetter(ratio, 0.5), data: results.map(arr => arr[i]) };
             } else {
                 return { fill: false, label: test_case, backgroundColor: colorGetter(ratio), data: results.map(arr => arr[i]) };
             }
