@@ -1,24 +1,5 @@
-# README
+# Algorithm-benchmark
+Rails based website to show benchmark data produced in another project [lib_calvin](https://github.com/calvincaulfield/lib_calvin).
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+[Go to website](http://bench.minami.im)
 
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
