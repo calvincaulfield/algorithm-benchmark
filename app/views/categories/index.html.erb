@@ -1,31 +1,74 @@
-<p id="notice"><%= notice %></p>
+<div id="container" class="container-fluid" style="width:100%">
+  <div class="row" style="background-color:#E5E8E8;">
+      <div class="col-xs-12"> 
+          <h1 style="display:inline-block;">Algorithms Benchmark</h1>        
+          <h1 style="display:inline-block;float:right;cursor:pointer;"> 
+          <a href="http://www.minami.im"  style="text-decoration:none; color:grey">by Calvin Caulfield</a></h1>
+      </div>
+  </div>
 
-<h1>Categories</h1>
+  <div class="row"  style="margin-bottom:30px;">      
+    <div class="col-xs-2">
+      <h2>Introduction</h2> 
+    </div>
+    <div class="col-xs-4"  style="padding-top:10px;"> 
+      <h4>About this website</h4>
+      <p>This website was created to visualize the relative performance of algorithms programmed in 
+          <a href="https://github.com/calvincaulfield/lib_calvin" >lib_calvin</a> C++ project.           
+          Most important algorithms in each area has been implemented and tested by myself, 
+            and they were benchmarked against other implementations by well known entities like 
+            STL (VC++ specifically), Boost, Intel, and Google. 
+            Benchmarking was performed on many dimensions to compare many aspects of algorithms most effectively.
+             
+      </p>
+    </div>  
+    <div class="col-xs-4"  style="padding-top:10px;"> 
+      <h4>How the numbers got here</h4>
+      <p> There is a project named 'benchmark' in lib_calvin itself, 
+            whose job is to run algorithms and produce benchmark results,
+          and save them in JSON format. 
+          JSON files were then posted to Rails web server by Ruby scripts, 
+          which are saved as JSON data in PostgreSQL database.
+      </p>
+    </div>      
+  </div>
 
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Desc</th>
-      <th>Comment</th>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
+  <div class="row">      
+  <% @categories.sort_by{ |x| get_category_order(x.name) }.each do |category| %>
+    <div class="col-xs-12 col-lg-2">
+      <div style="border-left:solid 1px; padding-left:10px;"> 
+        <h2><a href="<%= category_path(category) %>"><%= category.name %></a></h2>
+        <% if is_admin %>
+          <%= link_to 'edit', edit_category_path(category) %>
+        <% end %>
+        <h4 style="margin-top: 15px;margin-bottom:5px;<%= if category.name != 'Sorting' then 'visibility:hidden' end %>">Definition </h4>
+        <div style="">
+         <%= category.desc.html_safe if category.desc %>
+        </div>
 
-  <tbody>
-    <% @categories.each do |category| %>
-      <tr>
-        <td><%= category.name %></td>
-        <td><%= category.desc %></td>
-        <td><%= category.comment %></td>
-        <td><%= link_to 'Show', category %></td>
-        <td><%= link_to 'Edit', edit_category_path(category) %></td>
-        <td><%= link_to 'Destroy', category, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+        <h4 style="margin-top: 15px;margin-bottom:5px;<%= if category.name != 'Sorting' then 'visibility:hidden' end %>">Description </h4>
+        <div style="">
+         <%= category.desc2.html_safe if category.desc2 %>
+        </div>
 
-<br>
+        <h4 style="margin-top: 15px;margin-bottom:5px; <%= if category.name != 'Sorting' then 'visibility:hidden' end %>">Complexity </h4>
+        <div style="">
+         <%= category.desc3.html_safe if category.desc3 %>
+        </div>
 
-<%= link_to 'New Category', new_category_path %>
+        <h4 style="margin-top: 15px;margin-bottom:5px;<%= if category.name != 'Sorting' then 'visibility:hidden' end %>">Key performance factors </h4>
+        <div style="">
+         <%= category.comment.html_safe if category.comment %>
+        </div>
+      </div>
+    </div>
+  <% end %> 
+  </div>   
+  <div class="row">     
+    <div class="col-xs-12">
+      <div style="height:200px;">
+      <br>
+      </div>
+    </div>
+  </div>    
+</div>

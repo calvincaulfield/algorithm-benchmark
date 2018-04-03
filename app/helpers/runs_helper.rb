@@ -20,7 +20,7 @@ module RunsHelper
             return 3
         elsif category == "String"
             return 4
-        elsif category == "Paiza"
+        elsif category == "Etc."
           return 100
         else
           return 5
