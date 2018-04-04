@@ -10,19 +10,28 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180403042226) do
+ActiveRecord::Schema.define(version: 20180404023641) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "categories", force: :cascade do |t|
     t.string "name"
-    t.text "desc"
-    t.text "comment"
+    t.text "definition"
+    t.text "performance"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.text "desc2"
-    t.text "desc3"
+    t.text "description"
+    t.text "complexity"
+  end
+
+  create_table "introductions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.text "about"
+    t.text "how"
+    t.decimal "singleton"
+    t.index ["singleton"], name: "index_introductions_on_singleton", unique: true
   end
 
   create_table "runs", force: :cascade do |t|

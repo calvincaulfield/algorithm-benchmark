@@ -20,27 +20,17 @@
   </div>
 
   <div class="row"  style="margin-bottom:30px;">      
-    <div class="col-xs-2">
+    <div class="col-xs-12 col-lg-2">
       <h2>Introduction</h2> 
     </div>
-    <div class="col-xs-4"  style="padding-top:10px;"> 
+    <div class="col-xs-12 col-lg-4"  style="padding-top:10px;"> 
       <h4>What this is about</h4>
-      <p>This website was created to visualize the relative performance of algorithms programmed in 
-          <a href="https://github.com/calvincaulfield/lib_calvin" >lib_calvin</a> C++ project.           
-          Most important algorithms in each area has been implemented and tested by myself, 
-            and they were benchmarked against other implementations by well known entities like 
-            STL (VC++ specifically), Boost, Intel, and Google. 
-            Benchmarking was performed on many dimensions to compare many aspects of algorithms most effectively.
-             
+      <p><%= Introduction.all.first.about.html_safe  %>
       </p>
     </div>  
-    <div class="col-xs-4"  style="padding-top:10px;"> 
+    <div class="col-xs-12 col-lg-4"  style="padding-top:10px;"> 
       <h4>How this works</h4>
-      <p> There is a project named 'benchmark' in lib_calvin itself, 
-            whose job is to run algorithms and produce benchmark results,
-          and save them in JSON format. 
-          JSON files are then posted by Ruby scripts to Rails web server, 
-          which stores them as JSON data in PostgreSQL database to serve this website.
+      <p> <%= Introduction.all.first.how.html_safe  %>
       </p>
     </div>      
   </div>
@@ -56,22 +46,22 @@
 
         <h4 style="margin-top: 15px;margin-bottom:5px;<%= if category.name != 'Sorting' then 'visibility:hidden' end %>">Definition </h4>
         <div class="category-index-definition">
-         <%= category.desc.html_safe if category.desc %>
+         <%= category.definition.html_safe if category.definition %>
         </div>
 
         <h4 style="margin-top: 15px;margin-bottom:5px;<%= if category.name != 'Sorting' then 'visibility:hidden' end %>">Description </h4>
         <div class="category-index-description">
-         <%= category.desc2.html_safe if category.desc2 %>
+         <%= category.description.html_safe if category.description %>
         </div>
 
         <h4 style="margin-top: 15px;margin-bottom:5px; <%= if category.name != 'Sorting' then 'visibility:hidden' end %>">Complexity </h4>
         <div class="category-index-complexity">
-         <%= category.desc3.html_safe if category.desc3 %>
+         <%= category.complexity.html_safe if category.complexity %>
         </div>
 
         <h4 style="margin-top: 15px;margin-bottom:5px;<%= if category.name != 'Sorting' then 'visibility:hidden' end %>">Key performance factors </h4>
         <div class="category-index-performance">
-         <%= category.comment.html_safe if category.comment %>
+         <%= category.performance.html_safe if category.performance %>
         </div>
 
       </div>

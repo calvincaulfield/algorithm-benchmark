@@ -1,10 +1,12 @@
 Rails.application.routes.draw do
-  resources :categories
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
-  resources :runs
+  
+  get '/categories', to: 'categories#index'
+  get '/categories/:id', to: 'categories#show', as: 'category'
+  get '/categories/:id/edit', to: 'categories#edit', as: 'edit_category'
+
+  get '/runs/:id', to: 'runs#show', as: 'run'
 
   post '/runs/api', to: 'runs#api' 
-
 
   root 'categories#index'
 end

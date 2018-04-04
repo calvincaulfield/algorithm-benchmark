@@ -113,7 +113,8 @@
       <!-- <button onclick="filter();"  class="btn btn-info" style="width:100%">Apply filter</button> -->
 
     </div>
-    <div class="col-xs-12 col-lg-8">   
+    <div class="col-xs-12 col-lg-8">  
+    <div> 
       <canvas id="myChart" width="800" height="500"></canvas>
       <%= javascript_tag do %>  
           Chart.defaults.global.defaultFontSize = 18;
@@ -126,7 +127,7 @@
           myChart.update();
         }       
       <% end %>
-
+      </div>
     </div>
   </div>
 

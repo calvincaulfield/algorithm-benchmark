@@ -1,6 +1,8 @@
 class CategoriesController < ApplicationController
   before_action :set_category, only: [:show, :edit, :update, :destroy]
 
+  http_basic_authenticate_with name: "calvin", password: "minami", except: [:index, :show]
+
   # GET /categories
   # GET /categories.json
   def index
@@ -70,6 +72,6 @@ class CategoriesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def category_params
-      params.require(:category).permit(:name, :desc, :desc2, :desc3, :desc4, :comment)
+      params.require(:category).permit(:name, :definition, :description, :complexity, :performance)
     end
 end

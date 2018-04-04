@@ -84,7 +84,7 @@ function drawChart(chartId, algorithms, results, testCases, titleString, unitStr
             title: { text: titleString, fontSize: 25, display: true },
             layout: {
                 padding: { left: 0, right: 0, top: 0, bottom: 0 },
-                maintainAspectRatio: true
+                maintainAspectRatio: false
             }
         }
     });
