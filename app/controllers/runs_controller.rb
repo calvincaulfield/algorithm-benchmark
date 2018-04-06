@@ -4,7 +4,7 @@ class RunsController < ApplicationController
   before_action :use_unsafe_params
 
   def index
-    @runs = Run.all
+    @runs = Run.order(:created_at).all
   end
 
   def new
