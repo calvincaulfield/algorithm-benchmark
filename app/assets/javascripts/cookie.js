@@ -20,3 +20,48 @@ function getCookie(cname) {
     }
     return "";
 }
+
+function getActiveTagIds(allTagIds) {
+    var result = [];
+    for (var i = 0; i < allTagIds.length; i++) {
+        if (getCookie(allTagIds[i]) == '1') {
+            result.push(allTagIds[i]);
+        }
+    }
+    return result;
+}
+
+function getCategory() {
+    return getCookie('category');
+}
+
+function setCategory(category) {
+    setCookie('category', category, 1);
+}
+
+function setTagId(tag) {
+    setCookie(tag, '1', 1);
+}
+
+function unsetTagId(tag) {
+    setCookie(tag, '0', 1);
+}
+
+function unsetAll() {
+    var setTagIds = getAllSetTagIds();
+    for (var i = 0; i < setTagIds.length; i++) {
+        unsetTagId(setTagIds[i]);
+    }    
+}
+
+function getAllSetTagIds() {
+    var result = [];
+    var pairs = document.cookie.split(";");
+    for (var i = 0; i < pairs.length; i++){
+        var pair = pairs[i].split("=");
+        if (pair[1] == '1') {
+        result.push(pair[0]);
+      }
+    }
+    return result;
+}
