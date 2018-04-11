@@ -27,17 +27,28 @@ module RunsHelper
         end
     end 
     
-    def get_key_from_subcategory(input)
-        if input.include? 'drop'
-            return 1000
+    def get_key_from_category_subcategory(category, sub_category)
+        leading_number = sub_category.scan(/[1-9]?[0-9]/).first.to_i 
+        if category == 'Matrix'
+            if sub_category.include? 'drop'
+                return 1000
+            else
+                return leading_number
+            end
+        elsif category == 'Container'
+            if sub_category.include? '('
+                return leading_number + 1
+            else
+                return leading_number    
+            end
+        else
+            return leading_number  
         end
-        capture = input.scan(/[1-9]?[0-9]/).first.to_i      
-        return capture
     end
     
     def get_hierarchy (runs)
         hierarchy = {}
-        runs.each do |run|   
+        runs.sort_by { |e| e.created_at } .each do |run|   
             if hierarchy[run.category]
                 if hierarchy[run.category][run.sub_category] 
                     hierarchy[run.category][run.sub_category].push run
@@ -49,8 +60,8 @@ module RunsHelper
             end
         end 
       
-        hierarchy.each do |k, v|
-            hierarchy[k] = v.sort_by { |k, v| get_key_from_subcategory(k) }.to_h
+        hierarchy.each do |category, v|
+            hierarchy[category] = v.sort_by { |sub_category, run| get_key_from_category_subcategory(category, sub_category) }.to_h
         end
     
         hierarchy = hierarchy.sort_by { |k,v| get_category_order(k) }

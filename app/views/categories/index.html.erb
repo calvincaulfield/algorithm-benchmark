@@ -6,7 +6,8 @@
       $('.category-index-description').matchHeight();
       $('.category-index-complexity').matchHeight();
       $('.category-index-performance').matchHeight();
-      
+      $('.category-index-detail').matchHeight();
+     
   });
 <% end %>
 
@@ -19,7 +20,7 @@
       </div>
   </div>
 
-  <div class="row"  style="margin-bottom:30px;">      
+  <div class="row"  style="margin-bottom:70px;">      
     <div class="col-xs-12 col-lg-2">
       <h2>Introduction</h2> 
     </div>
@@ -36,7 +37,7 @@
   </div>
 
   <div class="row">      
-  <% @categories.sort_by{ |x| get_category_order(x.name) }.each do |category| %>
+  <% @categories.sort_by{ |x| get_category_order(x.name) }.each_with_index do |category, index| %>
     <div class="col-xs-12 col-lg-2">
       <div style="border-left:solid 1px; padding-left:10px;"> 
         <h2><a href="<%= category_path(category) %>"><%= category.name %></a></h2>
@@ -44,24 +45,29 @@
           <%= link_to 'edit', edit_category_path(category) %>
         <% end %>
 
-        <h4 style="margin-top: 15px;margin-bottom:5px;<%= if category.name != 'Sorting' then 'visibility:hidden' end %>">Definition </h4>
+        <h4 style="margin-top: 15px;margin-bottom:5px;<%= if index != 0 then 'visibility:hidden' end %>">Definition </h4>
         <div class="category-index-definition">
          <%= category.definition.html_safe if category.definition %>
         </div>
 
-        <h4 style="margin-top: 15px;margin-bottom:5px;<%= if category.name != 'Sorting' then 'visibility:hidden' end %>">Description </h4>
+        <h4 style="margin-top: 15px;margin-bottom:5px;<%= if index != 0 then 'visibility:hidden' end %>">Description </h4>
         <div class="category-index-description">
          <%= category.description.html_safe if category.description %>
         </div>
 
-        <h4 style="margin-top: 15px;margin-bottom:5px; <%= if category.name != 'Sorting' then 'visibility:hidden' end %>">Complexity </h4>
+        <h4 style="margin-top: 15px;margin-bottom:5px; <%= if index != 0 then 'visibility:hidden' end %>">Complexity </h4>
         <div class="category-index-complexity">
          <%= category.complexity.html_safe if category.complexity %>
         </div>
 
-        <h4 style="margin-top: 15px;margin-bottom:5px;<%= if category.name != 'Sorting' then 'visibility:hidden' end %>">Key performance factors </h4>
+        <h4 style="margin-top: 15px;margin-bottom:5px;<%= if index != 0 then 'visibility:hidden' end %>">Key performance factors </h4>
         <div class="category-index-performance">
          <%= category.performance.html_safe if category.performance %>
+        </div>
+
+        <h4 style="margin-top: 15px;margin-bottom:5px;<%= if index != 0 then 'visibility:hidden' end %>">Oservations</h4>
+        <div class="category-index-detail">
+         <%= category.detail.html_safe if category.detail %>
         </div>
 
       </div>
