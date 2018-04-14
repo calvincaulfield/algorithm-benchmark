@@ -3,8 +3,7 @@ class RunsController < ApplicationController
   #before_action :use_unsafe_params, only: [:api]
   before_action :use_unsafe_params
 
-  http_basic_authenticate_with name: "calvin", password: "minami", except: [:index, :show]
-  
+ 
   def index
     @runs = Run.order(:created_at).all
   end

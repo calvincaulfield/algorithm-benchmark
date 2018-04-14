@@ -6,19 +6,24 @@
 #
 default: &default
  # adapter: sqlite3
-  adapter: postgresql
+  #adapter: postgresql
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   timeout: 5000
 
+
 development:
   <<: *default
-  #database: db/development.sqlite3
+  adapter: postgresql
   database: rails_benchmark
   encoding: utf8
   username: calvin
   password: calvin1729
   host: calvin-postgre.cytzyor3ndjk.ap-northeast-2.rds.amazonaws.com
+  #host: calvin-mysql.cytzyor3ndjk.ap-northeast-2.rds.amazonaws.com
+
   port: 5432 
+ # port: 3306 
+
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".

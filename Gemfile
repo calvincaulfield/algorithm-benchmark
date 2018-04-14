@@ -54,6 +54,8 @@ end
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem 'pg'
+#gem 'mysql2', '~> 0.3.11'
+
 gem 'sprockets-rails', :require => 'sprockets/railtie'
 
 gem 'jquery-rails'
@@ -61,3 +63,5 @@ gem 'bootstrap-sass', '~> 3.3.7'
 
 
 gem 'chartjs-ror'
+
+#gem 'yaml_db'
