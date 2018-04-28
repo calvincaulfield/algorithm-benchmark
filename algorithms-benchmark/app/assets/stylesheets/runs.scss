@@ -1,0 +1,13 @@
+// Place all the styles related to the Runs controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+
+.current-position-mark {
+    height: 0.8em;
+    width: 0.8em;
+    background-color: rgb(235, 14, 14);
+    border-radius: 50%;
+    display: inline-block;
+    vertical-align: text-bottom;
+}

@@ -1,0 +1,59 @@
+<%= form_with model: @run, local: true do |form| %>
+<div class="row">	
+	<% if @run.errors.any? %>
+		<div id="error_explanation">
+			<h2>
+				<%= pluralize(@run.errors.count, "error") %> 
+					prohibited this drama from being saved:
+			</h2>
+			<ul>
+				<% @run.errors.full_messages.each do |msg| %>
+					<li><%= msg %></li>
+				<% end %> 
+			</ul>
+		</div>
+	<% end %>	
+</div>	
+<div class="row">
+	<div class="col">
+		<table class="table">
+			<tr>
+				<td><%= form.label 'Title' %></td>
+				<td><%= form.text_field :title %></td>
+			</tr>
+
+			<tr>
+				<td><%= form.label 'Date' %></td>
+				<td><%= form.date_field :date %></td>
+			</tr>
+
+			<tr>
+				<td><%= form.label 'Environment' %></td>
+				<td><%= form.text_field :env %></td>
+			</tr>
+			
+			<tr>
+				<td><%= form.label 'Tags' %></td>
+				<td><%= form.text_area :tags %></td>
+			</tr>
+			
+			<tr>
+				<td><%= form.label 'Data' %></td>
+				<td><%= form.text_area :data %></td>
+			</tr>
+
+	
+		</table>
+	</div>
+</div>
+<div class="row">
+	<div class="col">
+		<input type="submit" class="btn btn-warning" value="このデータで登録する">
+	</div>
+</div>
+<div class="row" style="margin-top:1em">
+	<div class="col">
+		<button type="button" class="btn btn-info"  onclick="location.assign('<%= runs_path %>')">戻る</button>
+	</div>
+</div>
+<% end %>

@@ -1,0 +1,82 @@
+<%= javascript_tag do %>
+  $(document).ready(function() {
+      $('.category-index-definition').matchHeight();
+      $('.category-index-description').matchHeight();
+      $('.category-index-complexity').matchHeight();
+      $('.category-index-performance').matchHeight();
+      $('.category-index-detail').matchHeight();
+     
+  });
+<% end %>
+
+<div id="container" class="container-fluid" style="width:100%">
+  <div class="row" style="background-color:#E5E8E8;">
+      <div class="col-xs-12"> 
+          <h1 style="display:inline-block;">Algorithms Benchmark</h1>        
+          <h1 style="display:inline-block;float:right;cursor:pointer;"> 
+          <a href="http://www.minami.im"  style="text-decoration:none; color:grey">by Calvin Caulfield</a></h1>
+      </div>
+  </div>
+
+  <div class="row"  style="margin-bottom:70px;">      
+    <div class="col-xs-12 col-lg-4">
+      <h2>Introduction</h2> 
+    </div>
+    <div class="col-xs-12 col-lg-4"  style="padding-top:10px;"> 
+      <h4>What this is about</h4>
+      <p><%= Introduction.all.first.about.html_safe  %>
+      </p>
+    </div>  
+    <div class="col-xs-12 col-lg-4"  style="padding-top:10px;"> 
+      <h4>How this works</h4>
+      <p> <%= Introduction.all.first.how.html_safe  %>
+      </p>
+    </div>      
+  </div>
+
+  <div class="row">      
+  <% @categories.sort_by{ |x| get_category_order(x.name) }.each_with_index do |category, index| %>
+    <div class="col-xs-12 col-lg-2">
+      <div style="border-left:solid 1px; padding-left:10px;"> 
+        <h2 style="margin-bottom:30px;"><a href="<%= category_path(category) %>"><%= category.name %></a></h2>
+        <% if is_admin %>
+          <%= link_to 'edit', edit_category_path(category) %>
+        <% end %>
+
+        <h4 style="margin-bottom:5px;<%= if index != 0 then 'visibility:hidden' end %>">Definition </h4>
+        <div class="category-index-definition">
+         <%= category.definition.html_safe if category.definition %>
+        </div>
+
+        <h4 style="margin-bottom:5px;<%= if index != 0 then 'visibility:hidden' end %>">Description </h4>
+        <div class="category-index-description">
+         <%= category.description.html_safe if category.description %>
+        </div>
+
+        <h4 style="margin-bottom:5px; <%= if index != 0 then 'visibility:hidden' end %>">Complexity </h4>
+        <div class="category-index-complexity">
+         <%= category.complexity.html_safe if category.complexity %>
+        </div>
+
+        <h4 style="margin-bottom:5px;<%= if index != 0 then 'visibility:hidden' end %>">Key performance factors </h4>
+        <div class="category-index-performance">
+         <%= category.performance.html_safe if category.performance %>
+        </div>
+
+        <h4 data-toggle="collapse" data-target=".category-index-detail" style="display:inline-block; margin-bottom:5px;<%= if index != 0 then 'visibility:hidden' end %>">Oservations</h4>
+        <div class="category-index-detail collapse">
+         <%= category.detail.html_safe if category.detail %>
+        </div>
+
+      </div>
+    </div>
+  <% end %> 
+  </div>   
+  <div class="row">     
+    <div class="col-xs-12">
+      <div style="height:200px;">
+      <br>
+      </div>
+    </div>
+  </div>    
+</div>
