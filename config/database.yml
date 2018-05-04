@@ -17,7 +17,7 @@ development:
   database: rails_benchmark
   encoding: utf8
   username: calvin
-  password: <%= begin IO.read("/home/ubuntu/git/db_password") rescue "" end %>
+  password: <%= begin IO.read("../db_password") rescue "" end %>
   host: calvin-postgre.cytzyor3ndjk.ap-northeast-2.rds.amazonaws.com
   #host: calvin-mysql.cytzyor3ndjk.ap-northeast-2.rds.amazonaws.com
 
