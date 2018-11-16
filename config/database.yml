@@ -18,7 +18,7 @@ development:
   encoding: utf8
   username: calvin
   password: <%= begin IO.read("../db_password") rescue "" end %>
-  host: calvin-postgre.cytzyor3ndjk.ap-northeast-2.rds.amazonaws.com
+  host: calvin-postgre.ch9qkh6mj0md.ap-northeast-1.rds.amazonaws.com
   #host: calvin-mysql.cytzyor3ndjk.ap-northeast-2.rds.amazonaws.com
 
   port: 5432 

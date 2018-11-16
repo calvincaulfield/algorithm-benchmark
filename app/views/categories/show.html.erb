@@ -48,7 +48,15 @@
     </div>
     <div class="row" style="margin-bottom:50px;">
         <% run_array.sort_by { |x| x.order }.each_with_index do |run, i| %>
-            <% chart_type = getChartType(run.category, run.sub_category, run.title) %>
+            <% 	all_tags = { } 
+				run.data["algorithms"].each do |tags|
+					temp = tags[1..tags.length]
+					temp.each do |tag|
+						all_tags[tag] = 1
+					end
+				end
+				
+				chart_type = getChartType(run.category, run.sub_category, run.title) %>
             <div class="col-xs-<%= bootstrap_arg %>">
                 <div style="width:<%= vw_size %>vw;cursor:pointer;" onclick="location.assign('<%= run_path(run) %>')">
                     <canvas id="<%= run.id %>" width="300" height="300"></canvas>
@@ -56,9 +64,43 @@
                         Chart.defaults.global.defaultFontSize = 10;                            
                         //Chart.options. = false;
                         var chartType = "<%= chart_type %>";
+						
+						var allTags = JSON.parse('<%= all_tags.keys.map { |e| e.gsub(/\s+/, '') } .to_json.html_safe %>');
+						var allTagIds = [];
+			
+						for (var tag of allTags) {
+						  allTagIds.push('include-' + tag);
+						  allTagIds.push('exclude-' + tag);
+						}
+						
+						var includeTags = [];
+						var excludeTags = [];
+						//alert(getActiveTagIds(allTagIds));
+						for (let tagId of getActiveTagIds(allTagIds)) {
+							if (tagId.indexOf('include') == 0) {
+								includeTags.push(tagId.substring(8));
+							} else {
+								excludeTags.push(tagId.substring(8));
+							}
+						}
+												
+						var algorithms = JSON.parse('<%= run.data["algorithms"].to_json.html_safe %>');
+						var results = JSON.parse('<%= run.data["results"].to_json.html_safe %>');
+						
+						var selectedIndex = algorithms.map(function(nameAndTags) {          
+						  var tags = nameAndTags.slice(1).map(function(tag) { return tag.replace(/\s+/, '') });
+						  //alert(tags);
+						  var toSelect = includeTags.every(e => tags.includes(e)) && 
+										  excludeTags.every(e => !tags.includes(e));
+						  return toSelect;
+						});    									
+						
+						selectedAlgorithms = algorithms.filter(function(v, i) { return selectedIndex[i]; });
+						selectedResults = results.filter(function(v, i) { return selectedIndex[i]; });
+			
                         var myChart = drawChart("<%= run.id %>", 
-                            JSON.parse('<%= run.data["algorithms"].to_json.html_safe %>'), 
-                            JSON.parse('<%= run.data["results"].to_json.html_safe %>'),  
+                            selectedAlgorithms, 
+                            selectedResults,  
                             JSON.parse('<%= run.data["test_cases"].to_json.html_safe %>'), 
                             "<%= run.title %>", "<%= run.data["unit"] %>", colorGenerator, 2000, chartType);  
                         myChart.options.legend.labels.fontSize = 10;

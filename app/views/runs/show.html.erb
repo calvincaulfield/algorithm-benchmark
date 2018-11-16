@@ -66,11 +66,11 @@
         <tbody>
           <% all_tags.each do |t, v| %>
           <tr><td><%= t %></td>
-          <td><input id="<%= 'include-' + t.gsub(/\s+/, '') %>" onclick="uncheck('<%= 'exclude-' + t.gsub(/\s+/, '') %>');
-           filter_tags();updateChart();"
+          <td><input id="<%= 'include-' + t.gsub(/\s+/, '') %>" onclick="clicked(this); uncheck('<%= 'exclude-' + t.gsub(/\s+/, '') %>');
+           save_to_cookie();updateChart();"
             type="checkbox" class="include_tags" value="<%= t %>" </td>
-          <td><input id="<%= 'exclude-' + t.gsub(/\s+/, '') %>" onclick="uncheck('<%= 'include-' + t.gsub(/\s+/, '') %>');
-            filter_tags();updateChart();" 
+          <td><input id="<%= 'exclude-' + t.gsub(/\s+/, '') %>" onclick="clicked(this); uncheck('<%= 'include-' + t.gsub(/\s+/, '') %>');
+            save_to_cookie();updateChart();" 
             type="checkbox" class="exclude_tags" value="<%= t %>"</td></tr>
         <% end %>
         </tbody>
@@ -88,6 +88,13 @@
       var selectedAlgorithms = algorithms.slice();
       var selectedResults = results.slice();
 
+	  var allTags = JSON.parse('<%= all_tags.keys.map { |e| e.gsub(/\s+/, '') } .to_json.html_safe %>');
+	var allTagIds = [];
+	for (var tag of allTags) {
+	  allTagIds.push('include-' + tag);
+	  allTagIds.push('exclude-' + tag);
+	}
+			
       if (getCookie('r')) {
         var colorGetter = getColorGenerator([getCookie('r'), getCookie('g'), getCookie('b'), getCookie('shadePart')]);
         setCookie('r', '', 1);
@@ -95,37 +102,26 @@
         var colorGetter = getRandomColorGenerator();
       }
 
-      function check(id) {
-        document.getElementById(id).checked = true;
-      }
-
+	  function clicked(button) {
+		if (button.checked) {
+			setTagId(button.id);
+			//alert('setting ' + button.id);
+		} else {
+			unsetTagId(button.id);
+		}
+	  }
+	  
       function uncheck(id) {
         document.getElementById(id).checked = false;
         unsetTagId(id);
       }
 
+  
+		
 
-      var currentCategory = '<%= @run.category %>';
-      var previousCategory = getCategory();
-      if (currentCategory != previousCategory) {
-        setCategory(currentCategory);
-        unsetAll();
-      } else { // preserve tag selections
-        var allTags = JSON.parse('<%= all_tags.keys.map { |e| e.gsub(/\s+/, '') } .to_json.html_safe %>');
-        var allTagIds = [];
-        for (var tag of allTags) {
-          allTagIds.push('include-' + tag);
-          allTagIds.push('exclude-' + tag);
-        }
 
-        for (let tagId of getActiveTagIds(allTagIds)) {
-          check(tagId);
-        }
-        filter_tags();
-      }
-   
-
-      function filter_tags() {
+      function save_to_cookie() {
+		return;
         var include_tag_elems = Array.from(document.getElementsByClassName("include_tags"));
         include_tag_elems = include_tag_elems.filter(e => e.checked)
         var include_tags = include_tag_elems.map(e => e.value);
@@ -134,21 +130,16 @@
         exclude_tag_elems = exclude_tag_elems.filter(e => e.checked)
         var exclude_tags = exclude_tag_elems.map(e => e.value);
 
-        var selectedIndex = algorithms.map(function(nameAndTags) {          
-          var tags = nameAndTags.slice(1);
-          var toSelect = include_tags.every(e => tags.includes(e)) && 
-                          exclude_tags.every(e => !tags.includes(e));
-          return toSelect;
-        });       
-
-        selectedAlgorithms = algorithms.filter(function(v, i) { return selectedIndex[i]; });
-        selectedResults = results.filter(function(v, i) { return selectedIndex[i]; });
-  
-        unsetAll(); 
-        include_tags.map(function(e) { return 'include-' + e.replace(/\s+/g, ''); }).forEach(function(e) { setTagId(e); });
+          include_tags.map(function(e) { return 'include-' + e.replace(/\s+/g, ''); }).forEach(function(e) { setTagId(e); });
         exclude_tags.map(function(e) { return 'exclude-' + e.replace(/\s+/g, ''); }).forEach(function(e) { setTagId(e); });
       }
 
+	function load_from_cookie() {
+		for (let tagId of getActiveTagIds(allTagIds)) {
+			document.getElementById(tagId).checked = true;
+		}
+	}
+	
     <% end %>
 
 
@@ -163,10 +154,38 @@
         var myChart = drawChart('myChart', selectedAlgorithms, selectedResults, testCases, 
               "<%= @run.title %>", "<%=@run.data["unit"]%>", colorGetter, 2000, chartType);  
 
-        function updateChart() {
+  		function updateChart() {
+		        var include_tag_elems = Array.from(document.getElementsByClassName("include_tags"));
+				include_tag_elems = include_tag_elems.filter(e => e.checked)
+				var include_tags = include_tag_elems.map(e => e.value);
+
+				var exclude_tag_elems = Array.from(document.getElementsByClassName("exclude_tags"));
+				exclude_tag_elems = exclude_tag_elems.filter(e => e.checked)
+				var exclude_tags = exclude_tag_elems.map(e => e.value);
+		
+	       var selectedIndex = algorithms.map(function(nameAndTags) {          
+			  var tags = nameAndTags.slice(1);
+			  var toSelect = include_tags.every(e => tags.includes(e)) && 
+							  exclude_tags.every(e => !tags.includes(e));
+			  return toSelect;
+			});       
+
+			selectedAlgorithms = algorithms.filter(function(v, i) { return selectedIndex[i]; });
+			selectedResults = results.filter(function(v, i) { return selectedIndex[i]; });	
+		
           myChart.data = getDataOption(selectedAlgorithms, selectedResults, testCases, colorGetter, chartType);
           myChart.update();
-        }       
+        }  
+		
+		load_from_cookie();
+		
+		var currentCategory = '<%= @run.category %>';
+		  var previousCategory = getCategory();
+		  if (currentCategory != previousCategory) {
+			setCategory(currentCategory);
+		  } 
+		updateChart();
+   
       <% end %>
       </div>
     </div>

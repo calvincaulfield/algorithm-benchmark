@@ -65,4 +65,6 @@ gem 'chartjs-ror'
 
 gem 'jquery_match_height_rails'
 
+gem 'rack', '~> 2.0.6'
+
 #gem 'yaml_db'
