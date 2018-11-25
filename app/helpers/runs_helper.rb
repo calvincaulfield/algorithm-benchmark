@@ -42,7 +42,7 @@ module RunsHelper
                 return leading_number    
             end
         else
-            return sub_category.created_at  
+            return leading_number  
         end
     end
     
