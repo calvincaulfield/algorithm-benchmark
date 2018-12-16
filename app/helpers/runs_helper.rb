@@ -29,7 +29,13 @@ module RunsHelper
     
     def get_key_from_category_subcategory(category, sub_category)
         leading_number = sub_category.scan(/[1-9]?[0-9]/).first.to_i 
-        if category == 'Matrix'
+		if category == 'Sorting'
+			if sub_category.include? 'Random'
+				return 0
+			elsif sub_category.include? 'All equal'
+				return 1
+			end
+        elsif category == 'Matrix'
             if sub_category.include? 'drop'
                 return 1000
             else
@@ -48,7 +54,7 @@ module RunsHelper
     
     def get_hierarchy (runs)
         hierarchy = {}
-        runs.sort_by { |e| e.created_at } .each do |run|   
+        runs.sort_by { |e| e.created_at } .each do |run| 
             if hierarchy[run.category]
                 if hierarchy[run.category][run.sub_category] 
                     hierarchy[run.category][run.sub_category].push run
