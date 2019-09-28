@@ -54,7 +54,7 @@ end
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem 'pg'
-#gem 'mysql2', '~> 0.3.11'
+gem 'mysql2', '~> 0.5'
 
 gem 'sprockets-rails', :require => 'sprockets/railtie'
 
@@ -66,4 +66,4 @@ gem 'chartjs-ror'
 gem 'jquery_match_height_rails'
 
 
-#gem 'yaml_db'
+gem 'yaml_db'

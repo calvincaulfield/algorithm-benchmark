@@ -1,0 +1,2615 @@
+
+---
+ar_internal_metadata:
+  columns:
+  - key
+  - value
+  - created_at
+  - updated_at
+  records: 
+  - - environment
+    - development
+    - '2018-03-18 09:05:33.603633'
+    - '2018-03-18 09:05:33.603633'
+
+---
+categories:
+  columns:
+  - id
+  - name
+  - definition
+  - performance
+  - created_at
+  - updated_at
+  - description
+  - complexity
+  - detail
+  records: 
+  - - 1
+    - Sorting
+    - <a href="https://en.wikipedia.org/wiki/Sorting_algorithm" ><q>a sorting algorithm
+      is an algorithm that puts elements of a list in a certain order.</q></a>
+    - 'Almost all comparison sorting algorithms use only sequential memory access,
+      so sorting can be said to be inherently cahce  friendly (except heapsort, which
+      is by far the slowest). When cache miss is rare, bottleneck will be <em>execution
+      flow</em> (conditional jump), or <em>memory bandwidth</em>. '
+    - '2018-04-03 01:53:49.023925'
+    - '2018-08-14 05:19:11.158098'
+    - Sorting algorithms form the base of many other important algorithms in Computer
+      Science. It assumes at least a well ordered type (i.e elements being comparable),
+      but sometimes assumes more to use specialized methods like radix sort. Only
+      the former case (called comparison sorting) is dealt here.
+    - "For comparison sorting, time complexity is O(N log(N)). Quicksort itself does
+      not guarantee O(N log(N)), but converting to heapsort after recursion goes too
+      deep prevents O(N<sup>2</sup>) wosrt case. One exception is in-place mergesort,
+      which has O(Nlog<sup>2</sup>(N)) time complexity.<br>For space, there are two
+      kinds of sorting algorithms: in-place and others. In-place sorting algorithms
+      uses O(1) space apart from input array, while others use more, typically O(N).\r\nThere
+      is another factor in sorting called stability which means that algorithm does
+      not change the relative position of 'equal' elements. "
+    - "<p>\r\n<em>Unstable sorting</em> <br>\r\nquicksort is very efficient because
+      its inner loop is light. <a href=\"https://arxiv.org/abs/1604.06697\">BlockQuickSort</a>
+      improves it further by separating comparison phase and swap phase of partitioning,
+      allowing comparison operations proceed without conditional jumps and thus enabling
+      parallelism. Its swapping phase is also without conditional jumps and total
+      number of movement is much less than that of traditional partitioning method.
+      If comparison is expensive or memory bandwitdth becomes bottleneck (i.e, when
+      something other than conditional jumps becomes bottlenecks), this technique
+      loses its advantage as can be seen in results for vectors and for 64byte object.
+      \r\n<br>One of its C++ implementation is <a href=\"https://github.com/orlp/pdqsort\">pdqsort
+      (pattern defeating qsort)</a>\r\n<br>Small differences between similar algorithms
+      seem to be caused by final insertion sort phase and pivot selection procedure.\r\n</p>\r\n\r\n<p>\r\n<em>Stable
+      sorting</em> <br>\r\nMergesort is very intuitive and fast regardless of input
+      pattern, so there is no need for 'backup mechanism' as was the case in quicksort.
+      Drawbacks are additional space and greater number of memory access compared
+      to quicksort. We can use in-place mergesort if extra space is undesirable, witih
+      only small penalty in performance. But excess memory access makes mergesort
+      much slower if memory bandwidth becomes bottleneck, which we can confirm with
+      the results for 64byte object. \r\n<br>The core logic of merge routine has 3
+      conditional jumps when programmed intuively, but it can be done with 2 conditional
+      jumps. Booth std::stable_sort and lib_calvin::mergesort use this technique,
+      which results in performance boost of about 10%. \r\n<br>std::stable_sort uses
+      in-place merge for the final merge, which is advantageous when input array is
+      a little bit smaller than cache size (lib_calvin::mergesort's final merge will
+      be cache miss in this case). This explains why std::stable_sort performs worse
+      relative to lib_calvin::mergesort for bigger input size and for bigger object
+      size.  \r\n<br>When applying mergesort to non trivial object like vector, moving
+      objects to and from temporary array requires careful programming to prevent
+      unnecessary l-value copies which is very bad for performance.\r\n</p>\r\n\r\n<p>\r\n<em>Parallel
+      sorting</em><br>\r\nFor single threaded quicksort, execution flow is so efficient
+      that memory bandwidth is primary bottleneck for integer types. Therefore, using
+      multiple thread is not very effective because main memory bandwidth cannot be
+      increased with multithreading. For vector, comparison is quite computationally
+      expensive, so multithreading is more effective. \r\n</p>\r\n"
+  - - 2
+    - Container
+    - <a href="https://en.wikipedia.org/wiki/Container_(abstract_data_type)"> <q>a
+      container is a class, a data structure, or an abstract data type (ADT) whose
+      instances are collections of other objects</q></a>
+    - Naturally, container algorithms cannot expect cache efficiency (temporal locality)
+      unless the size is quite small, because it has no choice but to access where
+      the wanted element is stored. Forcing some spatial locality (B-tree) can be
+      an option for tree, while reducing the number of memory access can be effective
+      for hash table.
+    - '2018-04-03 01:54:25.438919'
+    - '2018-08-14 05:53:34.115321'
+    - These are one of the things every programmer cannot live a day without. We all
+      need something to take care of all kinds of things we have. We store them, find
+      and fetch something when needed, discard one, or scan through the entire collection
+      for some reason. The latency and rate at which we can perform these actions
+      depend on what kind of container we use.
+    - There are two different kinds of containers. One that internally sorts (tree),
+      and others (hash table). For former containers, all general operation (insert,
+      delete, search) take O(log(N)) time, and scanning (also called iterating) takes
+      O(1) time. For latter containers, all operations take O(1) time. All containers
+      take O(N) space.
+    - "<p>\r\n<em>Small working set</em><br>\r\nFor minimal working set size, there
+      is no cache miss. Therefore, performance with minimum working set (especially
+      for small problem sizes) indicates efficiency in terms of sheer number of memory
+      accesses. This is well shown in iterating operations: std::unordered_set and
+      boost::unordered_set show remarkably good iterating performance for small problem
+      size, because all nodes are linked to next node in both implementations, thus
+      incurring only 1 memory access per iteration.\r\n</p>\r\n\r\n<p>\r\n<em>Large
+      working set</em><br>\r\nFor large working set size, bottleneck is cache miss.
+      Only spatial locality is possible solution here, which makes B-tree faster than
+      traditional binary trees. <br>One very interesting fact is that iterating speed
+      of hash tables have turned opposite from the result of small working set; lib_calvin's
+      implementation is faster here. Using traditional style hash table (array of
+      pointers to first node of each bucket), and making each node point to next node
+      seem to be effective in utilizing hardware pipeline, because pointers in the
+      table might be accessed before the execution flow reaches by branch misprediction
+      of iterating loop. This is an example of importance of understanding strengths
+      of modern CPUs.\r\n</p>\r\n\r\n<p>\r\n<em>Binary tree</em><br>\r\nstd::set shows
+      worst performance overall. This seem to be caused by its iterator implementation,
+      which has iterator store the pointer to its tree object. As iterator type is
+      used as return type of many functions, bigger iterator objects will negatively
+      affects performance. \r\n<br>std::set has slightly better iteration speed in
+      large working set. In std::set, it uses a dummy node for representing 'no child'
+      (typically represented by null pointer), which makes it possible to read the
+      contents of any child (without checking whether it exists or not) safely, thus
+      reducing a conditional jump. lib_calvin::rb_plus_tree adopts this technique,
+      and shows better iteration performance as expected. If not implemented carefully,
+      using this technique may result in bigger node object, which will have negative
+      effect due to lower cache effciency. \r\n</p>\r\n\r\n<p>\r\n<em>B-tree</em><br>\r\nB-tree
+      has certain advantages over binary trees, like generally faster insertion/deletion/searching
+      and much faster iterations, along with much less memory usage. But they are
+      not excluded in STL without good reason: insertion and deletion invalidates
+      iterators, and they perform worse for big objects with expensive comparison
+      like vectors. Discretion is needed when using this container.\r\n<br>\r\nGoogle's
+      implementation uses smaller node than lib_calvin's, so iterating is slower,
+      while sometimes having a little advantage for other operations. B-plus tree
+      is only better at iterating, sacrificing all other performances a little bit.\r\n</p>\r\n"
+  - - 3
+    - Matrix
+    - '<a href= "https://en.wikipedia.org/wiki/Matrix_(mathematics)"><q>a matrix (plural:
+      matrices) is a rectangular array of numbers</q> </a>'
+    - 'Cache efficiency plays a big role as always, but sheer number of multiplication
+      instructions can be bottleneck too, so using MMX registers is a must for floating
+      point types. Using MMX registers poses memory alignment problem, which can cause
+      performance fluctuation if not taken care of properly. '
+    - '2018-04-03 01:55:01.208669'
+    - '2018-05-02 23:40:32.602595'
+    - Primarily used in mathematics, matrix is an extremely powerful concept applicable
+      to many areas. Most computationally important operation with matrix is multiplication,
+      which represents composition of transformations in linear algebra.
+    - 'Multiplying two N x N matrices in usual way takes O(N<sup>3</sup>) time, but
+      constant factor may vary considerably. All O(N<sup>3</sup>) algorithms takes
+      no additional space. On the other hand, there are algorithms with less than
+      O(N<sub>3</sub>) time complexity, but implementing them efficiently is difficult
+      because they tend to use extra space. '
+    - "<p>\r\n<em>Cache efficiency</em><br>\r\nNaive method causes O(N<sup>3</sup>)
+      cache misses due to the lack of spatial locality, thus the slowest. Row first
+      method makes use of spatial locality only. One might wonder why naive with transpose
+      is much slower than row first method because both has spatial locality. For
+      small problems, transpose operation's overhead is high so that naive and naive
+      with transpose is about the same speed, while for larger problems, naive with
+      transpose is very faster than naive. But naive (and naive with transpose) incurs
+      two load ops per operation, while row first (and all others) incurs one load
+      and one store ops per operation, which is more efficient.\r\n<br>\r\nBlocking
+      method tries to utilize temporal locality as well, though with limited extent.
+      Recursive method is a <a href=\"https://en.wikipedia.org/wiki/Cache-oblivious_algorithm\">cache-oblivious
+      algorithm</a><a href=\"http://supertech.csail.mit.edu/papers/Prokop99.pdf\">
+      (for more details)</a> which is optimal in terms of cache miss for any cache
+      structure. This cache efficiency turns out to be dominant factor in matrix multiplication,
+      as using MMX instructions has speedup of about 2 for blocking method, while
+      resursive method is much faster than blocking method the bigger the problem
+      becomes.\r\n</p>\r\n\r\n<p>\r\n<em>Using MMX instructions</em><br>\r\n256bit
+      registers were used with compiler intricsics. To load into those registers,
+      data should be 32byte aligned in memory, which isn't always the case unless
+      special care is taken. Converting to non MMX multiplication when confronted
+      with non-aligned data will deteriorate performance for certain problem sizes.
+      Note that all problem sizes shown as bar chart is optimal case for recursive
+      method because they will always be in alignment. You can see the result for
+      other values in the bottom chart, where recursive method shows low performance
+      for certain problem sizes. This can be ammended of course, but I left it at
+      that to see the difference. \r\n</p>\r\n\r\n<p>\r\n<em>Theoretical maximum speed</em><br>\r\nIf
+      perfectly pipelined (no delay caused by memory), we can actually calculate maximum
+      speed, unlike other kinds of algorithms. We only consider multiplication operation
+      here, but addtion occurs same number of times as multiplication, it's just a
+      difference of factor of 2. Maximum speed is calculated as: <strong>4Ghz</strong>
+      (CPU clock speed)  * <strong>2 fmadd per cycle</strong>  (fusioned multi-add
+      instructions) <a href=\"https://software.intel.com/sites/landingpage/IntrinsicsGuide/#techs=FMA&expand=2369,2399\">(reference)</a>
+      * <strong>4 cores</strong> (8 logical cores but ALU is shared)  * <strong>4</strong>
+      double precision float in 256bit register = <strong>128</strong>GFlops. Deviation
+      from this value (substantial, actually) can be considered mainly as delay by
+      memory access.\r\n</p>"
+  - - 4
+    - String
+    - <a href="https://en.wikipedia.org/wiki/String_(computer_science)"><q>a string
+      is traditionally a sequence of characters, either as a literal constant or as
+      some kind of variable. </q></a>
+    - "As all algorithms except for suffix tree use only sequential access (and only
+      single pass), memory access is not the bottleneck here. Performance varies much
+      depending on the characteristic of text and pattern, as well as general environment
+      such as character set size and pattern length. \r\n<br>Somtimes there are huge
+      gaps between same algorithms resulting from implementation details. \r\n"
+    - '2018-04-03 01:55:43.971764'
+    - '2018-05-02 23:53:58.690564'
+    - <a href="https://en.wikipedia.org/wiki/%22Hello,_World!%22_program">"Hello,
+      World!" program</a> is unarguably the most popular program as a programmer's
+      first program in a new language. There are not many things in this program,
+      but a string is there. Being representation of human language in computer systems
+      as one of the reasons, strings algorithms have been researched a lot. In this
+      website, only exact string matching algorithms were studied, which have a lot
+      of application such as text searching or studying DNA sequences.
+    - "String matching algorirhm is defined on <em>text</em> of length N, and <em>pattern</em>
+      of length M. Time complexity of most algorithms is O(N + M). Naive algorithm
+      and boyer_moore_horspool has worst case of O(MN). \r\n<br>Suffix tree is quite
+      different though, because it has O(M) complexity assuming the it has preprocessed
+      text beforehand, which takes O(N)."
+    - "<p>\r\n<em>Naive method</em><br>\r\nSuper simple logic with nested loop. But
+      actually, this one performs quite reasonably well in many cases. More than half
+      of the benchmarking cases, naive method outperforms boost::knuth_morris_pratt;
+      a surprising result considering that KMP is a well devised algorithm with O(N
+      + M) worst case complexity. \"Simple code is fast code\" holds true here.\r\n</p>\r\n\r\n<p>\r\n<em>Knuth-Morris-Pratt</em><br>\r\nThere
+      are not two different versions of KMP algorithm. Nevertheless, lib_calvin's
+      implementation is much faster than boost, sometimes by 3 times. There are two
+      reasons for this. 1) I enhanced KMP's preprocessing to maximize jump amount
+      and avoid predictable mismatches, and 2) did careful micro-optimization using
+      'goto' statements. \r\n<br>\r\nKMP algorithm is one of few algorithms that survived
+      all test cases.\r\n</p>\r\n\r\n<p>\r\n<em>Boyer-Moore-Horspool</em><br>\r\nThis
+      one is simiplified version of Boyer-Moore algorithm, which uses only bad character
+      table. With O(N<sub>2</sub>) worst case complexity, this one performs well only
+      with large character set, which is the case when text is in natural language.\r\n</p>\r\n\r\n<p>\r\n<em>Boyer-Moore</em><br>\r\nlib_calvin
+      and boost performs similarly for normal cases, but boost didn't survive certain
+      'killer' cases. Again, it is the quality of preprocessing playing important
+      role. A developer must have a thorough understanding of the algorithm to perform
+      such optimizations.\r\n</p>\r\n\r\n<p>\r\n<em>Suffix tree</em><br>\r\nSuffix
+      tree is singular in two ways. 1) Its performance isn't affected by anything
+      whatsoever after the preprocessing has been done. 2) Its performance goes higher
+      in proportion to text length, which means suffix tree finds all matches in constant
+      time (when O(1) number of matches were found, to be strict). But the time needed
+      for preprocessing is very long (tens of seconds for millions of charactors,
+      roughly). It uses a graph data structure for preprocessing which might consume
+      huge space, too. Suffix tree does the same thing as other algorithms, but obviously
+      it will be used for very different purposes from theirs. \r\n</p>"
+  - - 5
+    - Etc.
+    - Thigns not as important as core algorithms, but worth noting.
+    - Using lower complexity algorithm suffices in those problems. For S_012, we can
+      see huge performance gap between Python and C++, and using dedicated library
+      results in performance drop rather than improvement.
+    - '2018-04-03 01:56:11.986186'
+    - '2018-04-04 00:30:01.612194'
+    - " <a href=\"https://en.wikipedia.org/wiki/Competitive_programming\">Competitive
+      programming</a> requires knowledge of algorithms, though the extent varies.
+      I have solved problems from a Japanese website <a href=\r\n\"https://paiza.jp/challenges\">Paiza</a>.
+      Solutions to all rank S problems are <a href=\"https://github.com/calvincaulfield/paiza\">here</a>.
+      For benchmarking, I selected a few problems and solved them in many ways."
+    - "S_012 is trivial for a programmer who has understanding of ordered container
+      (tree). Using tree, it can be solved in O(N log(N)). Using an array, though
+      depeding upon the efficiency of implementation, cannot pass large test cases.
+      \r\nS_018 can be done in O(log(N)), but doing so requires some mathematical
+      problem solving, rather than applying existing algorithms. Using O(N) methods
+      cannot pass the test. "
+    - 
+  - - 7
+    - Graph
+    - <a href="https://en.wikipedia.org/wiki/Graph_(abstract_data_type)">"a graph
+      is an abstract data type that is meant to implement the undirected graph and
+      directed graph concepts from mathematics, specifically the field of graph theory."</a>
+    - "As a container, graph's performance is based on its underlying containers which
+      are used for graph representation (matrix, map, set, vector, list), or for temporary
+      data structures of algorithms, <em>priority  heap</em> being the most common
+      one.\r\n<br>Note that my graph class and Boost's graph has different interface,
+      so it is not a fair comparison here. "
+    - '2018-04-10 06:24:38.84593'
+    - '2018-06-26 01:49:21.28794'
+    - 'Graph is more realistic than other algorithms because it abstracts dual concepts,
+      vertex and edge, while all others operate on uniform elements. Adding, deleting,
+      modifying graph is very similar to container operations, and we can solve some
+      problems like suffix tree with only those basic operations. There are many families
+      of algorithms in graph: traversing graph, finding shortest path between vertices,
+      finding minimum spanning tree, finding maximum flow, and many others.'
+    - 'Most graph algorithms take O(V) space, except those using matrices. Traversing
+      algorithms have O(V) time complexity, single source shortest path O(E log(V))
+      (Dijkstra) or O(VE) (Bellman-Ford), all pairs shortest path O(V<sup>3</sup>)
+      (Floyd-Warshall), minimum spanning tree O(E log(V)) (Prim, Kruscal). '
+    - Maps, sets, vectors, and linked lists might be used in implementation, though
+      the specification of interface leaves at most one option usually.
+
+---
+introductions:
+  columns:
+  - id
+  - created_at
+  - updated_at
+  - about
+  - how
+  - singleton
+  records: 
+  - - 4
+    - '2018-04-04 02:43:49.519075'
+    - '2018-04-12 00:51:26.191048'
+    - "This website was created to visualize the relative performance of algorithms
+      programmed in \r\n          <a href=\"https://github.com/calvincaulfield/lib_calvin\"
+      >lib_calvin</a> C++ project.           \r\n          Most important algorithms
+      in each area has been implemented and tested by myself, \r\n            and
+      they were benchmarked against other implementations by well known entities like
+      \r\n            STL (VC++ specifically), Boost, Intel, and Google. \r\n            Benchmarking
+      was performed on many dimensions to compare many aspects of algorithms most
+      effectively."
+    - "All benchmarks were run in Windows 10 with Intel 4790K. There is a project
+      named 'benchmark' in lib_calvin itself, \r\n            whose job is to run
+      algorithms and produce benchmark results,\r\n          and save them in JSON
+      format. \r\n          JSON files are then posted by Ruby scripts to Rails web
+      server, \r\n          which stores them as JSON data in PostgreSQL database
+      to serve this website."
+    - '0.0'
+
+---
+runs:
+  columns:
+  - id
+  - title
+  - env
+  - tags
+  - data
+  - created_at
+  - updated_at
+  - comment
+  - datetime
+  - category
+  - sub_category
+  - order
+  records: 
+  - - 724
+    - S_012 ハイライト機能
+    - Intel 4790K with 16GB ram, Windows 10, Visual Studio 2017 (Python 3.6.3)
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[0.062, 0.056, 0.03, 0.005,
+      0], [0.023, 0.013, 0.003, 0, 0], [1.9, 1.58, 0.97, 0.23, 0.023], [1.72, 1.47,
+      0.93, 0.19, 0.02], [3.3, 2.96, 2.68, 2.44, 2.43]], "algorithms": [["Python (list)"],
+      ["Python (BitVector)"], ["C++ (std::vector<bool>)"], ["C++ (std::bitvector)"],
+      ["C++ (std::map)"]], "test_cases": ["1K", "10K", "100K", "1M", "10M"]}'
+    - '2018-03-31 00:19:25.439754'
+    - '2018-03-31 00:19:25.439754'
+    - 100K opeerations for each run
+    - '2018-03-31 03:16:32'
+    - Etc.
+    - Paiza
+    - '1.0'
+  - - 1515
+    - 'Vertices: 10K / Edges: 50K'
+    - Intel 4790K with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[5.75881418184009], [3.96050865921653]],
+      "algorithms": [["lib_calvin::graph"], ["boost::graph"]], "test_cases": ["growing"]}'
+    - '2018-04-16 11:12:51.274555'
+    - '2018-04-16 11:12:51.274555'
+    - ''
+    - '2018-04-16 08:02:48'
+    - Graph
+    - Growing / Sparse
+    - '1.0'
+  - - 1516
+    - 'Vertices: 1K / Edges: 5K'
+    - Intel 4790K with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[4.92695299489765], [4.0997485214257]],
+      "algorithms": [["lib_calvin::graph"], ["boost::graph"]], "test_cases": ["growing"]}'
+    - '2018-04-16 11:12:51.314228'
+    - '2018-04-16 11:12:51.314228'
+    - ''
+    - '2018-04-16 08:02:48'
+    - Graph
+    - Growing / Sparse
+    - '0.0'
+  - - 1518
+    - 'Vertices: 100K / Edges: 500K'
+    - Intel 4790K with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[4.25855869796305], [3.18809777510754]],
+      "algorithms": [["lib_calvin::graph"], ["boost::graph"]], "test_cases": ["growing"]}'
+    - '2018-04-16 11:12:51.421909'
+    - '2018-04-16 11:12:51.421909'
+    - ''
+    - '2018-04-16 08:02:49'
+    - Graph
+    - Growing / Sparse
+    - '2.0'
+  - - 1519
+    - 'Vertices: 1M / Edges: 5M'
+    - Intel 4790K with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[3.18982887592016], [2.60003949532795]],
+      "algorithms": [["lib_calvin::graph"], ["boost::graph"]], "test_cases": ["growing"]}'
+    - '2018-04-16 11:12:51.461709'
+    - '2018-04-16 11:12:51.461709'
+    - ''
+    - '2018-04-16 08:02:53'
+    - Graph
+    - Growing / Sparse
+    - '3.0'
+  - - 1520
+    - 'Vertices: 1K / Edges: 1M'
+    - Intel 4790K with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[29.5680737186483], [11.9954692153136]],
+      "algorithms": [["lib_calvin::graph"], ["boost::graph"]], "test_cases": ["growing"]}'
+    - '2018-04-16 11:12:51.505964'
+    - '2018-04-16 11:12:51.505964'
+    - ''
+    - '2018-04-16 08:02:53'
+    - Graph
+    - Growing / Dense
+    - '4.0'
+  - - 1521
+    - 'Vertices: 2K / Edges: 4M'
+    - Intel 4790K with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[27.176129411913], [14.1104696605271]],
+      "algorithms": [["lib_calvin::graph"], ["boost::graph"]], "test_cases": ["growing"]}'
+    - '2018-04-16 11:12:51.549312'
+    - '2018-04-16 11:12:51.549312'
+    - ''
+    - '2018-04-16 08:02:54'
+    - Graph
+    - Growing / Dense
+    - '5.0'
+  - - 1522
+    - 'Vertices: 4K / Edges: 16M'
+    - Intel 4790K with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[29.216965582672], [14.0307573844928]],
+      "algorithms": [["lib_calvin::graph"], ["boost::graph"]], "test_cases": ["growing"]}'
+    - '2018-04-16 11:12:51.600081'
+    - '2018-04-16 11:12:51.600081'
+    - ''
+    - '2018-04-16 08:02:56'
+    - Graph
+    - Growing / Dense
+    - '6.0'
+  - - 1523
+    - 'Charset size: 2 / Text length: 100K'
+    - Intel 4790K with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[0.152589987526593], [0.107675352137434]],
+      "algorithms": [["lib_calvin::graph"], ["boost::graph"]], "test_cases": ["building
+      suffix tree"]}'
+    - '2018-04-16 11:12:51.647339'
+    - '2018-04-16 11:12:51.647339'
+    - ''
+    - '2018-04-16 08:02:57'
+    - Graph
+    - Suffix tree performance
+    - '0.0'
+  - - 1524
+    - 'Charset size: 26 / Text length: 100K'
+    - Intel 4790K with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[0.145210269043699], [0.109550141731427]],
+      "algorithms": [["lib_calvin::graph"], ["boost::graph"]], "test_cases": ["building
+      suffix tree"]}'
+    - '2018-04-16 11:12:51.686339'
+    - '2018-04-16 11:12:51.686339'
+    - ''
+    - '2018-04-16 08:02:59'
+    - Graph
+    - Suffix tree performance
+    - '1.0'
+  - - 1525
+    - 'Charset size: 2 / Text length: 1M'
+    - Intel 4790K with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[0.102267064874341], [0.0742982972487643]],
+      "algorithms": [["lib_calvin::graph"], ["boost::graph"]], "test_cases": ["building
+      suffix tree"]}'
+    - '2018-04-16 11:12:51.730281'
+    - '2018-04-16 11:12:51.730281'
+    - ''
+    - '2018-04-16 08:03:22'
+    - Graph
+    - Suffix tree performance
+    - '2.0'
+  - - 1526
+    - 'Charset size: 26 / Text length: 1M'
+    - Intel 4790K with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[0.0806028879746837], [0.0661264187015959]],
+      "algorithms": [["lib_calvin::graph"], ["boost::graph"]], "test_cases": ["building
+      suffix tree"]}'
+    - '2018-04-16 11:12:51.774034'
+    - '2018-04-16 11:12:51.774034'
+    - ''
+    - '2018-04-16 08:03:50'
+    - Graph
+    - Suffix tree performance
+    - '3.0'
+  - - 1609
+    - Multiplying 160 x 160 matrices
+    - Intel 4790K with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "G/s (higher is better)", "results": [[47.5091341413907], [1.53255156740439],
+      [1.58836399284306], [6.92541149219285], [6.59358349028509], [3.1050485846103],
+      [18.8688806276114], [10.090434534118], [1.83736865124312], [1.91403568536356],
+      [3.52774698750561]], "algorithms": [["MKL", "parallel", "MMX"], ["naive"], ["naive
+      with transpose"], ["row first"], ["blocking"], ["naive (MMX)", "MMX"], ["blocking
+      (MMX)", "MMX"], ["recursive", "MMX"], ["parallel recursive", "parallel", "MMX"],
+      ["Strassen", "MMX"], ["parallel Strassen", "parallel", "MMX"]], "test_cases":
+      ["multiplication"]}'
+    - '2018-04-19 10:35:30.995465'
+    - '2018-04-19 10:35:30.995465'
+    - ''
+    - '2018-04-19 06:41:11'
+    - Matrix
+    - 8byte (floating point) / best case performance
+    - '0.0'
+  - - 1610
+    - Multiplying 320 x 320 matrices
+    - Intel 4790K with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "G/s (higher is better)", "results": [[58.9042105509147], [1.29722953924044],
+      [1.44066048796483], [5.54658057911393], [6.23983489421244], [2.36994469237043],
+      [11.6614423632642], [15.7796169994939], [10.3943100288216], [2.15961426421004],
+      [4.81885471023636]], "algorithms": [["MKL", "parallel", "MMX"], ["naive"], ["naive
+      with transpose"], ["row first"], ["blocking"], ["naive (MMX)", "MMX"], ["blocking
+      (MMX)", "MMX"], ["recursive", "MMX"], ["parallel recursive", "parallel", "MMX"],
+      ["Strassen", "MMX"], ["parallel Strassen", "parallel", "MMX"]], "test_cases":
+      ["multiplication"]}'
+    - '2018-04-19 10:35:31.032135'
+    - '2018-04-19 10:35:31.032135'
+    - ''
+    - '2018-04-19 06:41:12'
+    - Matrix
+    - 8byte (floating point) / best case performance
+    - '1.0'
+  - - 1611
+    - Multiplying 640 x 640 matrices
+    - Intel 4790K with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "G/s (higher is better)", "results": [[56.7922385558258], [0.752791349024186],
+      [1.38673542055289], [5.49532420324885], [4.29560121842196], [1.46587711147054],
+      [8.98781298036528], [11.4196448524604], [20.1581607892921], [2.15143257502196],
+      [6.23991138670762]], "algorithms": [["MKL", "parallel", "MMX"], ["naive"], ["naive
+      with transpose"], ["row first"], ["blocking"], ["naive (MMX)", "MMX"], ["blocking
+      (MMX)", "MMX"], ["recursive", "MMX"], ["parallel recursive", "parallel", "MMX"],
+      ["Strassen", "MMX"], ["parallel Strassen", "parallel", "MMX"]], "test_cases":
+      ["multiplication"]}'
+    - '2018-04-19 10:35:31.069507'
+    - '2018-04-19 10:35:31.069507'
+    - ''
+    - '2018-04-19 06:41:16'
+    - Matrix
+    - 8byte (floating point) / best case performance
+    - '2.0'
+  - - 1612
+    - Multiplying 1280 x 1280 matrices
+    - Intel 4790K with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "G/s (higher is better)", "results": [[67.5338844497514], [0.150753058049428],
+      [1.29897211567046], [2.3030522906088], [5.08761194685476], [0.545121542749072],
+      [7.18365257564776], [17.8979605143452], [39.472636368874], [2.62100100854108],
+      [7.47176363484581]], "algorithms": [["MKL", "parallel", "MMX"], ["naive"], ["naive
+      with transpose"], ["row first"], ["blocking"], ["naive (MMX)", "MMX"], ["blocking
+      (MMX)", "MMX"], ["recursive", "MMX"], ["parallel recursive", "parallel", "MMX"],
+      ["Strassen", "MMX"], ["parallel Strassen", "parallel", "MMX"]], "test_cases":
+      ["multiplication"]}'
+    - '2018-04-19 10:35:31.10974'
+    - '2018-04-19 10:35:31.10974'
+    - ''
+    - '2018-04-19 06:41:39'
+    - Matrix
+    - 8byte (floating point) / best case performance
+    - '3.0'
+  - - 1613
+    - Multiplying 2560 x 2560 matrices
+    - Intel 4790K with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "G/s (higher is better)", "results": [[76.9710635377512], [0.0], [0.0],
+      [0.0], [0.0], [0.0], [4.17453371515326], [19.4273895523352], [47.3469273396829],
+      [0.0], [0.0]], "algorithms": [["MKL", "parallel", "MMX"], ["naive"], ["naive
+      with transpose"], ["row first"], ["blocking"], ["naive (MMX)", "MMX"], ["blocking
+      (MMX)", "MMX"], ["recursive", "MMX"], ["parallel recursive", "parallel", "MMX"],
+      ["Strassen", "MMX"], ["parallel Strassen", "parallel", "MMX"]], "test_cases":
+      ["multiplication"]}'
+    - '2018-04-19 10:35:31.152234'
+    - '2018-04-19 10:35:31.152234'
+    - ''
+    - '2018-04-19 06:41:45'
+    - Matrix
+    - 8byte (floating point) / best case performance
+    - '4.0'
+  - - 1614
+    - Multiplying 5120 x 5120 matrices
+    - Intel 4790K with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "G/s (higher is better)", "results": [[69.3285353331728], [0.0], [0.0],
+      [0.0], [0.0], [0.0], [3.99976572574469], [19.3218085886536], [57.775303299208],
+      [0.0], [0.0]], "algorithms": [["MKL", "parallel", "MMX"], ["naive"], ["naive
+      with transpose"], ["row first"], ["blocking"], ["naive (MMX)", "MMX"], ["blocking
+      (MMX)", "MMX"], ["recursive", "MMX"], ["parallel recursive", "parallel", "MMX"],
+      ["Strassen", "MMX"], ["parallel Strassen", "parallel", "MMX"]], "test_cases":
+      ["multiplication"]}'
+    - '2018-04-19 10:35:31.221322'
+    - '2018-04-19 10:35:31.221322'
+    - ''
+    - '2018-04-19 06:42:32'
+    - Matrix
+    - 8byte (floating point) / best case performance
+    - '5.0'
+  - - 1616
+    - Multiplying 10240 x 10240 matrices
+    - Intel 4790K with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "G/s (higher is better)", "results": [[63.8009454497699], [0.0], [0.0],
+      [0.0], [0.0], [0.0], [4.13403841634018], [21.0034726563823], [71.8721680152551],
+      [0.0], [0.0]], "algorithms": [["MKL", "parallel", "MMX"], ["naive"], ["naive
+      with transpose"], ["row first"], ["blocking"], ["naive (MMX)", "MMX"], ["blocking
+      (MMX)", "MMX"], ["recursive", "MMX"], ["parallel recursive", "parallel", "MMX"],
+      ["Strassen", "MMX"], ["parallel Strassen", "parallel", "MMX"]], "test_cases":
+      ["multiplication"]}'
+    - '2018-04-19 10:35:31.296102'
+    - '2018-04-19 10:35:31.296102'
+    - ''
+    - '2018-04-19 06:48:26'
+    - Matrix
+    - 8byte (floating point) / best case performance
+    - '6.0'
+  - - 1770
+    - MKL vs recursive parallel
+    - Intel 4790K with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "G/s (higher is better)", "results": [[1.87846655961168, 85.0512687740008,
+      56.0343218976986, 67.4402665488654, 70.3072852336867, 66.6846316663476, 74.4136686901643,
+      88.7840936013243, 89.4454626868977, 72.1772513491825, 79.1374354746763, 78.993452480967,
+      75.0732963565267], [9.45607056829063, 25.1752222125546, 13.6181255761937, 37.9979162271721,
+      15.234804055667, 40.0847560782192, 54.307029840725, 18.8030330256293, 46.9927230860819,
+      65.7499105921775, 19.1149615141516, 17.874789187298, 67.2020966397673]], "algorithms":
+      [["MKL", "parallel", "MMX"], ["parallel recursive", "parallel", "MMX"]], "test_cases":
+      ["400", "640", "800", "1280", "1600", "1920", "2560", "3200", "3840", "5120",
+      "6400", "8000", "10240"]}'
+    - '2018-04-20 08:29:27.989475'
+    - '2018-04-20 08:29:27.989475'
+    - ''
+    - '2018-04-20 05:28:59'
+    - Matrix
+    - 8byte (floating point) / performance drop
+    - '0.0'
+  - - 1772
+    - S_018 天気の予報
+    - Intel 4790K with 16GB ram, Windows 10, Visual Studio 2017 (Python 3.6.3)
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[7142, 8264, 8064], [12345,
+      12195, 12254], [13698, 13531, 13679], [22222, 21929, 21944], [500000, 5000000,
+      50000000]], "algorithms": [["Version 1"], ["Version 2"], ["Version 3"], ["Version
+      4"], ["Mathematical solution"]], "test_cases": ["1K", "10K", "100K"]}'
+    - '2018-04-20 09:21:16.862434'
+    - '2018-04-20 09:21:16.862434'
+    - ''
+    - '2018-03-25 03:16:32'
+    - Etc.
+    - Paiza
+    - '1.0'
+  - - 1962
+    - 'Charset size: 2 / Pattern len: 1000'
+    - Intel 4790K with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M / sec (higher is better)", "results": [[211.403171639503, 214.015214341588,
+      205.186878052924], [243.196043492208, 234.320419817837, 238.544269284038], [247.505209365894,
+      249.597617440983, 247.234359197282], [736.296780615956, 616.453260821991, 703.945261216488],
+      [650.837856114069, 659.26009920546, 607.066773247356], [2488.64555465688, 2484.67884904706,
+      3093.64302762469], [3523.69508761668, 3568.87937187723, 3931.6173789283], [1028.01864825828,
+      1580.70028183886, 3302.72532637119]], "algorithms": [["naive"], ["boost::knuth_morris_pratt"],
+      ["lib_calvin::knuth_morris_pratt"], ["std::boyer_moore_horspool"], ["boost::boyer_moore_horspool"],
+      ["boost::boyer_moore"], ["lib_calvin::boyer_moore"], ["lib_calvin::suffix_tree"]],
+      "test_cases": ["1M", "2M", "4M"]}'
+    - '2018-04-22 03:55:00.438594'
+    - '2018-04-22 03:55:00.438594'
+    - ''
+    - '2018-04-22 12:37:48'
+    - String
+    - Randomized string
+    - '0.0'
+  - - 1963
+    - 'Charset size: 4 / Pattern len: 300'
+    - Intel 4790K with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M / sec (higher is better)", "results": [[330.440655832178, 338.726422523952,
+      335.742678753179], [277.34250412547, 273.902176111704, 270.316242296072], [424.44083103817,
+      403.39684346004, 414.068944756681], [1680.55929013176, 1399.10820842795, 1680.74076968683],
+      [1193.26900817867, 1398.60726688364, 1311.64226793441], [2292.47906393495, 2836.4046868751,
+      2052.78742872979], [2396.81128227007, 2749.36008643988, 1798.02433086525], [822.024333564322,
+      1698.87449564663, 3331.66749958354]], "algorithms": [["naive"], ["boost::knuth_morris_pratt"],
+      ["lib_calvin::knuth_morris_pratt"], ["std::boyer_moore_horspool"], ["boost::boyer_moore_horspool"],
+      ["boost::boyer_moore"], ["lib_calvin::boyer_moore"], ["lib_calvin::suffix_tree"]],
+      "test_cases": ["1M", "2M", "4M"]}'
+    - '2018-04-22 03:55:00.48317'
+    - '2018-04-22 03:55:00.48317'
+    - ''
+    - '2018-04-22 12:39:25'
+    - String
+    - Randomized string
+    - '1.0'
+  - - 1964
+    - 'Charset size: 26 / Pattern len: 10'
+    - Intel 4790K with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M / sec (higher is better)", "results": [[794.701565721025, 793.084619353089,
+      781.083714599822], [445.345427727563, 445.650870868649, 441.811249398032], [1300.37151614216,
+      1275.47603954486, 1257.36975849699], [3097.94141792779, 3078.36754169264, 3031.08376399982],
+      [3171.04958570237, 3160.76104804515, 3085.07241436225], [2738.73558055717, 2596.41461106358,
+      2605.96165848612], [2624.38950139224, 2572.42336429245, 2588.22448447421], [844.4676391556,
+      1678.74946594783, 3438.97580422599]], "algorithms": [["naive"], ["boost::knuth_morris_pratt"],
+      ["lib_calvin::knuth_morris_pratt"], ["std::boyer_moore_horspool"], ["boost::boyer_moore_horspool"],
+      ["boost::boyer_moore"], ["lib_calvin::boyer_moore"], ["lib_calvin::suffix_tree"]],
+      "test_cases": ["1M", "2M", "4M"]}'
+    - '2018-04-22 03:55:00.528329'
+    - '2018-04-22 03:55:00.528329'
+    - ''
+    - '2018-04-22 12:41:23'
+    - String
+    - Randomized string
+    - '2.0'
+  - - 1965
+    - 'Charset size: 2 / Pattern len: 1000'
+    - Intel 4790K with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M / sec (higher is better)", "results": [[9.81800299129024, 9.72354677861982,
+      9.78310429761377], [510.240527384609, 585.915585383867, 631.128255359541], [1804.26600654588,
+      1800.10062562497, 1763.2470547162], [85.0308104890266, 85.2018344125353, 85.4873144519212],
+      [10.3985128130163, 10.3278300612986, 10.3919759542355], [14.9267760284873, 15.1358813913586,
+      15.0034484488544], [14069.4467893522, 11703.3664733661, 49489.025808527], [794.377712303401,
+      1625.19573451128, 3069.88359768869]], "algorithms": [["naive"], ["boost::knuth_morris_pratt"],
+      ["lib_calvin::knuth_morris_pratt"], ["std::boyer_moore_horspool"], ["boost::boyer_moore_horspool"],
+      ["boost::boyer_moore"], ["lib_calvin::boyer_moore"], ["lib_calvin::suffix_tree"]],
+      "test_cases": ["1M", "2M", "4M"]}'
+    - '2018-04-22 03:55:00.571603'
+    - '2018-04-22 03:55:00.571603'
+    - ''
+    - '2018-04-22 12:44:14'
+    - String
+    - Cyclic / wrong character in text
+    - '3.0'
+  - - 1966
+    - 'Charset size: 4 / Pattern len: 300'
+    - Intel 4790K with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M / sec (higher is better)", "results": [[55.2749705923338, 55.1330434768706,
+      54.3662433905769], [1056.15580410422, 1030.87363447901, 1018.28120242718], [1719.86791414419,
+      1751.55735343187, 1727.87296677948], [474.980858271412, 470.536310228354, 467.82509516732],
+      [62.4093971576763, 62.7601506306375, 62.4216393851331], [87.8760954084828, 88.1135212313054,
+      87.8770877234346], [95057.0342205323, 99930.048965724, 110561.37538351], [867.784372939012,
+      1676.5822535445, 3293.65576027456]], "algorithms": [["naive"], ["boost::knuth_morris_pratt"],
+      ["lib_calvin::knuth_morris_pratt"], ["std::boyer_moore_horspool"], ["boost::boyer_moore_horspool"],
+      ["boost::boyer_moore"], ["lib_calvin::boyer_moore"], ["lib_calvin::suffix_tree"]],
+      "test_cases": ["1M", "2M", "4M"]}'
+    - '2018-04-22 03:55:00.613434'
+    - '2018-04-22 03:55:00.613434'
+    - ''
+    - '2018-04-22 12:45:36'
+    - String
+    - Cyclic / wrong character in text
+    - '4.0'
+  - - 1967
+    - 'Charset size: 26 / Pattern len: 10'
+    - Intel 4790K with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M / sec (higher is better)", "results": [[661.666672180556, 649.265696728642,
+      646.948328560472], [592.462338650288, 574.514205150979, 580.785692692932], [1893.68833677353,
+      1844.83634917956, 1855.81780323135], [2482.30119249749, 2536.42625150442, 2472.8527138013],
+      [3061.43691603091, 3057.84214195726, 2977.8167540904], [3313.96870950745, 3322.43574409271,
+      3264.68516600516], [3202.31591486963, 3202.31591486963, 3125.27346142787], [845.750358175277,
+      1711.55797988235, 4229.2105226987]], "algorithms": [["naive"], ["boost::knuth_morris_pratt"],
+      ["lib_calvin::knuth_morris_pratt"], ["std::boyer_moore_horspool"], ["boost::boyer_moore_horspool"],
+      ["boost::boyer_moore"], ["lib_calvin::boyer_moore"], ["lib_calvin::suffix_tree"]],
+      "test_cases": ["1M", "2M", "4M"]}'
+    - '2018-04-22 03:55:00.664532'
+    - '2018-04-22 03:55:00.664532'
+    - ''
+    - '2018-04-22 12:46:43'
+    - String
+    - Cyclic / wrong character in text
+    - '5.0'
+  - - 1968
+    - 'Charset size: 2 / Pattern len: 1000'
+    - Intel 4790K with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M / sec (higher is better)", "results": [[221.520887093684, 230.14154625661,
+      400.464137935868], [697.426426742677, 695.683146936629, 689.650891822051], [1732.86499768663,
+      1712.68655438294, 1685.10025925267], [471.818070726472, 441.061210915912, 443.924953598744],
+      [137.978994077942, 385.93952829313, 103.603235042095], [3948.54259292895, 3993.05208936451,
+      3834.89988993837], [3916.80701891818, 3940.5605841487, 3643.96295547259], [980.432527613882,
+      1889.55905249951, 4149.28290018278]], "algorithms": [["naive"], ["boost::knuth_morris_pratt"],
+      ["lib_calvin::knuth_morris_pratt"], ["std::boyer_moore_horspool"], ["boost::boyer_moore_horspool"],
+      ["boost::boyer_moore"], ["lib_calvin::boyer_moore"], ["lib_calvin::suffix_tree"]],
+      "test_cases": ["1M", "2M", "4M"]}'
+    - '2018-04-22 03:55:00.711362'
+    - '2018-04-22 03:55:00.711362'
+    - ''
+    - '2018-04-22 12:48:46'
+    - String
+    - Cyclic / wrong character in pattern
+    - '6.0'
+  - - 1969
+    - 'Charset size: 4 / Pattern len: 300'
+    - Intel 4790K with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M / sec (higher is better)", "results": [[553.581729145746, 628.887705182475,
+      386.647851093406], [1189.26427354981, 1159.54128546747, 1148.2667917512], [1735.95439300619,
+      1709.67934963798, 1727.49015546548], [896.323996027492, 914.088897887586, 920.892565910583],
+      [639.41194562185, 456.081620366781, 2391.29758981116], [3997.1380491568, 3720.4941560338,
+      3622.78806146422], [3798.45402921011, 3458.04782825951, 3435.94201504255], [1053.87070903367,
+      1981.80504785564, 4320.63893608587]], "algorithms": [["naive"], ["boost::knuth_morris_pratt"],
+      ["lib_calvin::knuth_morris_pratt"], ["std::boyer_moore_horspool"], ["boost::boyer_moore_horspool"],
+      ["boost::boyer_moore"], ["lib_calvin::boyer_moore"], ["lib_calvin::suffix_tree"]],
+      "test_cases": ["1M", "2M", "4M"]}'
+    - '2018-04-22 03:55:00.7561'
+    - '2018-04-22 03:55:00.7561'
+    - ''
+    - '2018-04-22 12:49:46'
+    - String
+    - Cyclic / wrong character in pattern
+    - '7.0'
+  - - 1970
+    - 'Charset size: 26 / Pattern len: 10'
+    - Intel 4790K with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M / sec (higher is better)", "results": [[783.67572125595, 777.26711328435,
+      767.395218897568], [629.395541110228, 681.510417909003, 680.647506779675], [1873.66267326696,
+      1876.36798953737, 1836.36095694606], [3371.29410495513, 3364.0244497297, 3232.8640023018],
+      [3454.97135828744, 3448.86454756933, 3336.65887000711], [4150.39366483911, 4161.47349453495,
+      3954.55817204503], [3964.61973349826, 4063.83471571444, 3958.57352802917], [1104.02693825729,
+      1950.07039754135, 4432.43255222791]], "algorithms": [["naive"], ["boost::knuth_morris_pratt"],
+      ["lib_calvin::knuth_morris_pratt"], ["std::boyer_moore_horspool"], ["boost::boyer_moore_horspool"],
+      ["boost::boyer_moore"], ["lib_calvin::boyer_moore"], ["lib_calvin::suffix_tree"]],
+      "test_cases": ["1M", "2M", "4M"]}'
+    - '2018-04-22 03:55:00.805743'
+    - '2018-04-22 03:55:00.805743'
+    - ''
+    - '2018-04-22 12:50:49'
+    - String
+    - Cyclic / wrong character in pattern
+    - '8.0'
+  - - 2902
+    - Growing
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[57.7256109293823, 61.5908927599906,
+      23.3264597433842], [54.528104693961, 59.9458089886742, 27.1468864567692], [65.6254101588135,
+      63.1861400499732, 23.2114465813277], [60.3330383718124, 63.6448560459431, 24.9635489938684],
+      [79.9275323706506, 88.6402584355979, 52.4987679043969], [107.488355428162, 124.466006259257,
+      65.5609899844644], [106.875667972925, 118.224426742891, 60.1587855048128], [90.7907877614018,
+      88.5004484022719, 46.5958423483295], [79.2497688548408, 102.054006980494, 50.2229341962736],
+      [75.7212448572655, 109.975108967004, 42.8477404619809]], "algorithms": [["std::set"],
+      ["boost::set"], ["lib_calvin::rb_tree"], ["lib_calvin::rb_tree+"], ["google::b_tree",
+      "B-tree"], ["lib_calvin::b_tree", "B-tree"], ["lib_calvin::b_plus_tree", "B-tree"],
+      ["std::unordered_set", "hash table"], ["boost::unordered_set", "hash table"],
+      ["lib_calvin::hash_table", "hash table"]], "test_cases": ["1K", "10K", "1M"]}'
+    - '2018-08-19 23:45:45.034786'
+    - '2018-08-19 23:45:45.034786'
+    - ''
+    - '2018-08-20 08:33:43'
+    - Container
+    - 16byte / minimum working set
+    - '0.0'
+  - - 2903
+    - Insert/Delete
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[63.8331826160966, 58.0360971627442,
+      19.0992607341706], [85.7939515264174, 80.2248434947011, 23.8099843103193], [89.4881279083642,
+      77.6276975624903, 21.9474275237867], [82.3926835297026, 74.0032989026133, 22.0214571895343],
+      [105.073288618812, 115.641695769827, 54.7209476859953], [116.895261845387, 117.481663070422,
+      56.1030966039436], [113.352981183405, 114.136141589688, 50.7514127290126], [205.528722638989,
+      254.348655484746, 103.96074608565], [196.87623047644, 239.170238718473, 80.5592138045376],
+      [220.038139944257, 278.043807346535, 140.964610856131]], "algorithms": [["std::set"],
+      ["boost::set"], ["lib_calvin::rb_tree"], ["lib_calvin::rb_tree+"], ["google::b_tree",
+      "B-tree"], ["lib_calvin::b_tree", "B-tree"], ["lib_calvin::b_plus_tree", "B-tree"],
+      ["std::unordered_set", "hash table"], ["boost::unordered_set", "hash table"],
+      ["lib_calvin::hash_table", "hash table"]], "test_cases": ["1K", "10K", "1M"]}'
+    - '2018-08-19 23:45:45.144334'
+    - '2018-08-19 23:45:45.144334'
+    - ''
+    - '2018-08-20 08:33:51'
+    - Container
+    - 16byte / minimum working set
+    - '1.0'
+  - - 2904
+    - Searching
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[63.4008199839385, 56.5846273399315,
+      19.5668982958458], [128.103849520678, 106.631028207461, 28.0850458222429], [125.525638611686,
+      101.024954286208, 24.7224019424627], [115.451221858765, 94.7472144318957, 25.7853825879364],
+      [105.075128717033, 114.930932894382, 54.1919413365065], [168.496728355191, 168.193175468465,
+      76.1694741738785], [162.632477705798, 158.680063965697, 69.5584794777498], [296.882731321128,
+      384.837406195882, 150.307598140427], [340.058943550215, 423.147085927068, 136.35191152951],
+      [397.95715327983, 448.873327946853, 209.660436859453]], "algorithms": [["std::set"],
+      ["boost::set"], ["lib_calvin::rb_tree"], ["lib_calvin::rb_tree+"], ["google::b_tree",
+      "B-tree"], ["lib_calvin::b_tree", "B-tree"], ["lib_calvin::b_plus_tree", "B-tree"],
+      ["std::unordered_set", "hash table"], ["boost::unordered_set", "hash table"],
+      ["lib_calvin::hash_table", "hash table"]], "test_cases": ["1K", "10K", "1M"]}'
+    - '2018-08-19 23:45:45.196147'
+    - '2018-08-19 23:45:45.196147'
+    - ''
+    - '2018-08-20 08:33:59'
+    - Container
+    - 16byte / minimum working set
+    - '2.0'
+  - - 2905
+    - Iterating
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[129.886998311469, 77.1581124039382,
+      16.2842659630995], [124.688279301746, 77.929567257113, 13.0786686365234], [141.68319637291,
+      71.9900941630432, 12.6681799060928], [135.538086202223, 82.6842618775942, 18.6126035058514],
+      [259.80774227072, 271.061476742925, 113.372720528081], [779.423226812159, 588.131506204787,
+      160.920102525416], [1039.50103950104, 820.344544708778, 181.516501392867], [346.380325597506,
+      158.23285547011, 23.644578106719], [346.380325597506, 165.807232511482, 22.8537505770001],
+      [135.519718118986, 121.291512019989, 53.8522391491777]], "algorithms": [["std::set"],
+      ["boost::set"], ["lib_calvin::rb_tree"], ["lib_calvin::rb_tree+"], ["google::b_tree",
+      "B-tree"], ["lib_calvin::b_tree", "B-tree"], ["lib_calvin::b_plus_tree", "B-tree"],
+      ["std::unordered_set", "hash table"], ["boost::unordered_set", "hash table"],
+      ["lib_calvin::hash_table", "hash table"]], "test_cases": ["1K", "10K", "1M"]}'
+    - '2018-08-19 23:45:45.253477'
+    - '2018-08-19 23:45:45.253477'
+    - ''
+    - '2018-08-20 08:34:04'
+    - Container
+    - 16byte / minimum working set
+    - '3.0'
+  - - 2906
+    - Growing
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[58.2648721086057, 63.9348943866584,
+      23.8538531811631], [62.343491858979, 65.6095270865288, 24.2990640125776], [62.5521267723103,
+      64.9112735014872, 24.2892038675894], [60.5278024372528, 63.1008604152878, 24.1626099936837],
+      [69.5281357189209, 76.0906967286919, 34.585321437281], [79.9275323706506, 82.781533095597,
+      37.2796058735831], [78.9162172826516, 82.2475890033146, 35.7979430485402], [86.9918227686597,
+      96.3083923133062, 48.0784223271341], [78.9162172826516, 101.243722889181, 49.1542212747221],
+      [75.1126690035053, 112.084167737693, 38.9792922120331]], "algorithms": [["std::set"],
+      ["boost::set"], ["lib_calvin::rb_tree"], ["lib_calvin::rb_tree+"], ["google::b_tree",
+      "B-tree"], ["lib_calvin::b_tree", "B-tree"], ["lib_calvin::b_plus_tree", "B-tree"],
+      ["std::unordered_set", "hash table"], ["boost::unordered_set", "hash table"],
+      ["lib_calvin::hash_table", "hash table"]], "test_cases": ["1K", "10K", "1M"]}'
+    - '2018-08-19 23:45:45.313531'
+    - '2018-08-19 23:45:45.313531'
+    - ''
+    - '2018-08-20 08:34:09'
+    - Container
+    - 32byte / minimum working set
+    - '0.0'
+  - - 2907
+    - Insert/Delete
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[61.7264899231505, 55.3127938492173,
+      18.7029570097254], [83.1255195344971, 75.2135437864002, 21.6930976815025], [85.0135313204018,
+      74.4945544480698, 21.5056973108373], [80.6169886867493, 69.0151235140661, 21.2350066539812],
+      [97.4120855927525, 94.0169690182748, 36.6851245801574], [79.9275323706506, 75.6801755780073,
+      30.3966910106049], [78.9162172826516, 72.8881272529518, 28.3833016154668], [210.150257434065,
+      251.385412942438, 97.7703817910095], [192.814448229321, 228.086581666401, 81.9332758972666],
+      [217.477980354489, 264.416579507127, 139.635636703004]], "algorithms": [["std::set"],
+      ["boost::set"], ["lib_calvin::rb_tree"], ["lib_calvin::rb_tree+"], ["google::b_tree",
+      "B-tree"], ["lib_calvin::b_tree", "B-tree"], ["lib_calvin::b_plus_tree", "B-tree"],
+      ["std::unordered_set", "hash table"], ["boost::unordered_set", "hash table"],
+      ["lib_calvin::hash_table", "hash table"]], "test_cases": ["1K", "10K", "1M"]}'
+    - '2018-08-19 23:45:45.370253'
+    - '2018-08-19 23:45:45.370253'
+    - ''
+    - '2018-08-20 08:34:18'
+    - Container
+    - 32byte / minimum working set
+    - '1.0'
+  - - 2908
+    - Searching
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[64.051924760339, 55.5757618047549,
+      19.2626422072896], [125.523012552301, 100.266709447129, 26.1783162187557], [123.859460798481,
+      95.7169840216448, 24.8205857325255], [114.042423781647, 90.9094582200332, 24.6539511208148],
+      [100.016669444907, 94.0799658803324, 34.2240347224209], [123.862017712269, 112.084028150526,
+      38.5052787493836], [118.375882886793, 103.294047164062, 36.7367395199259], [292.226767971946,
+      376.06866178056, 140.655385282474], [333.982744224882, 409.556313993174, 128.215007335822],
+      [359.66910442393, 403.083138136591, 196.013208938124]], "algorithms": [["std::set"],
+      ["boost::set"], ["lib_calvin::rb_tree"], ["lib_calvin::rb_tree+"], ["google::b_tree",
+      "B-tree"], ["lib_calvin::b_tree", "B-tree"], ["lib_calvin::b_plus_tree", "B-tree"],
+      ["std::unordered_set", "hash table"], ["boost::unordered_set", "hash table"],
+      ["lib_calvin::hash_table", "hash table"]], "test_cases": ["1K", "10K", "1M"]}'
+    - '2018-08-19 23:45:45.419381'
+    - '2018-08-19 23:45:45.419381'
+    - ''
+    - '2018-08-20 08:34:27'
+    - Container
+    - 32byte / minimum working set
+    - '2.0'
+  - - 2909
+    - Iterating
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[119.889701474643, 73.6919675755343,
+      16.6995226992521], [124.688279301746, 68.8122320623714, 12.3908186115746], [141.68319637291,
+      70.8451113330924, 12.2267882891382], [129.886998311469, 79.5203333492374, 18.0882424416334],
+      [222.667557336896, 202.412760100397, 58.2237494441087], [445.43429844098, 358.30735605002,
+      80.9405682545911], [779.423226812159, 494.80455220188, 93.3679616429475], [259.74025974026,
+      136.121093324622, 19.9818141513046], [311.720698254364, 141.691226479256, 20.1532448709337],
+      [129.886998311469, 111.726850196639, 47.3347550800369]], "algorithms": [["std::set"],
+      ["boost::set"], ["lib_calvin::rb_tree"], ["lib_calvin::rb_tree+"], ["google::b_tree",
+      "B-tree"], ["lib_calvin::b_tree", "B-tree"], ["lib_calvin::b_plus_tree", "B-tree"],
+      ["std::unordered_set", "hash table"], ["boost::unordered_set", "hash table"],
+      ["lib_calvin::hash_table", "hash table"]], "test_cases": ["1K", "10K", "1M"]}'
+    - '2018-08-19 23:45:45.466393'
+    - '2018-08-19 23:45:45.466393'
+    - ''
+    - '2018-08-20 08:34:33'
+    - Container
+    - 32byte / minimum working set
+    - '3.0'
+  - - 2910
+    - Growing
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[56.3343254433981, 58.2650984291729,
+      20.9592662786429], [55.6643071185371, 59.0127172405653, 22.2980843455023], [61.1209583766273,
+      62.6779356952237, 22.5630909365721], [56.5046239617275, 59.2119676597391, 21.9064948834382],
+      [51.9534497090607, 53.467993465023, 21.2066249196094], [55.4985154147127, 56.5048368140313,
+      20.6191429649103], [52.2429646140986, 52.5367976486864, 19.020408159085], [88.6406949430484,
+      95.9461678034511, 42.6135748551875], [76.3387915569296, 95.1650849877078, 43.5934006633407],
+      [74.2188466391232, 115.403701381382, 37.5181732980933]], "algorithms": [["std::set"],
+      ["boost::set"], ["lib_calvin::rb_tree"], ["lib_calvin::rb_tree+"], ["google::b_tree",
+      "B-tree"], ["lib_calvin::b_tree", "B-tree"], ["lib_calvin::b_plus_tree", "B-tree"],
+      ["std::unordered_set", "hash table"], ["boost::unordered_set", "hash table"],
+      ["lib_calvin::hash_table", "hash table"]], "test_cases": ["1K", "10K", "1M"]}'
+    - '2018-08-19 23:45:45.524924'
+    - '2018-08-19 23:45:45.524924'
+    - ''
+    - '2018-08-20 08:34:40'
+    - Container
+    - 64byte / minimum working set
+    - '0.0'
+  - - 2911
+    - Insert/Delete
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[63.1858295246319, 55.2365474457393,
+      18.2231807241474], [82.0310897830278, 70.9705298817473, 20.4638105664174], [83.1243679084524,
+      69.4250525701926, 20.4793439673419], [76.6518473095202, 65.9798893297323, 19.0291612352073],
+      [76.0282825210978, 64.0371130646383, 20.2236589199402], [57.7256109293823, 51.646993944103,
+      18.1765485588844], [54.0555150139193, 47.3736072159478, 13.4331850914193], [196.87623047644,
+      238.762889879902, 80.4229972505357], [185.179469769452, 212.696567077407, 70.0012595918957],
+      [210.150257434065, 245.447628294112, 117.681469737273]], "algorithms": [["std::set"],
+      ["boost::set"], ["lib_calvin::rb_tree"], ["lib_calvin::rb_tree+"], ["google::b_tree",
+      "B-tree"], ["lib_calvin::b_tree", "B-tree"], ["lib_calvin::b_plus_tree", "B-tree"],
+      ["std::unordered_set", "hash table"], ["boost::unordered_set", "hash table"],
+      ["lib_calvin::hash_table", "hash table"]], "test_cases": ["1K", "10K", "1M"]}'
+    - '2018-08-19 23:45:45.579545'
+    - '2018-08-19 23:45:45.579545'
+    - ''
+    - '2018-08-20 08:34:52'
+    - Container
+    - 64byte / minimum working set
+    - '1.0'
+  - - 2912
+    - Searching
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[61.5239481968356, 53.0534312896169,
+      17.4010895799324], [122.241916753255, 89.8035995278326, 23.356724026421], [121.447656060238,
+      91.1161731207289, 23.8609883341407], [111.994624258036, 85.0140934474915, 23.3859062357164],
+      [84.6298150838541, 69.4078660705816, 22.0807815678114], [95.9125277746695, 75.4968953998903,
+      23.8017052109192], [83.4956860562204, 65.3345200018003, 21.2906227108026], [283.379776129977,
+      372.077640200922, 137.932676503587], [306.607389238081, 366.727244574474, 118.289841540475],
+      [359.690666027217, 383.783852934028, 168.90019417286]], "algorithms": [["std::set"],
+      ["boost::set"], ["lib_calvin::rb_tree"], ["lib_calvin::rb_tree+"], ["google::b_tree",
+      "B-tree"], ["lib_calvin::b_tree", "B-tree"], ["lib_calvin::b_plus_tree", "B-tree"],
+      ["std::unordered_set", "hash table"], ["boost::unordered_set", "hash table"],
+      ["lib_calvin::hash_table", "hash table"]], "test_cases": ["1K", "10K", "1M"]}'
+    - '2018-08-19 23:45:45.635965'
+    - '2018-08-19 23:45:45.635965'
+    - ''
+    - '2018-08-20 08:35:04'
+    - Container
+    - 64byte / minimum working set
+    - '2.0'
+  - - 2913
+    - Iterating
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[119.889701474643, 70.3655490271963,
+      16.3490904886518], [119.889701474643, 62.3437509741211, 12.0389881668665], [141.68319637291,
+      66.4646142393789, 12.1578792534629], [124.688279301746, 74.9327478587967, 17.5466671158613],
+      [141.68319637291, 106.026549047882, 25.7223028416354], [283.36639274582, 163.204021347086,
+      35.1045978352328], [389.711613406079, 232.623057597469, 41.6490699346193], [239.750659314313,
+      114.602672534324, 17.1487679802046], [222.667557336896, 117.629068495407, 17.4511849782154],
+      [135.538086202223, 110.538765945217, 48.8801197953976]], "algorithms": [["std::set"],
+      ["boost::set"], ["lib_calvin::rb_tree"], ["lib_calvin::rb_tree+"], ["google::b_tree",
+      "B-tree"], ["lib_calvin::b_tree", "B-tree"], ["lib_calvin::b_plus_tree", "B-tree"],
+      ["std::unordered_set", "hash table"], ["boost::unordered_set", "hash table"],
+      ["lib_calvin::hash_table", "hash table"]], "test_cases": ["1K", "10K", "1M"]}'
+    - '2018-08-19 23:45:45.693224'
+    - '2018-08-19 23:45:45.693224'
+    - ''
+    - '2018-08-20 08:35:11'
+    - Container
+    - 64byte / minimum working set
+    - '3.0'
+  - - 2914
+    - Growing
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[37.0356653457279, 44.1805393560245,
+      14.1642641568671], [39.6251461177263, 41.4029528585979, 14.2317127865901], [37.4810252309768,
+      46.9612423648847, 14.936075097933], [36.9626553971637, 44.3551646168009, 14.0837429801235],
+      [24.7723012642131, 28.5456287602919, 14.2967445540626], [41.748133510531, 35.3199635497976,
+      14.7454311003841], [34.8938644954929, 38.8891697551149, 15.1969434027683], [65.8559072748826,
+      75.2942751252813, 36.6095937462388], [58.8148801646817, 76.4015222578857, 36.7244877907152],
+      [63.8331826160966, 87.9180135217905, 25.768428410509]], "algorithms": [["std::set"],
+      ["boost::set"], ["lib_calvin::rb_tree"], ["lib_calvin::rb_tree+"], ["google::b_tree",
+      "B-tree"], ["lib_calvin::b_tree", "B-tree"], ["lib_calvin::b_plus_tree", "B-tree"],
+      ["std::unordered_set", "hash table"], ["boost::unordered_set", "hash table"],
+      ["lib_calvin::hash_table", "hash table"]], "test_cases": ["1K", "10K", "1M"]}'
+    - '2018-08-19 23:45:45.747072'
+    - '2018-08-19 23:45:45.747072'
+    - ''
+    - '2018-08-20 08:35:26'
+    - Container
+    - 32byte (vector) / minimum working set
+    - '0.0'
+  - - 2915
+    - Insert/Delete
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[37.3313091467929, 35.2666787879548,
+      11.0019936018634], [45.5062571103527, 42.5650855629162, 11.9870446013642], [47.5907198096371,
+      44.7157420279285, 12.8449140783047], [45.8410690137294, 41.9101334977452, 12.1283507723546],
+      [39.5413206801107, 39.040709048682, 13.7131845075948], [35.288928098809, 33.1850453436772,
+      11.4542000274318], [34.5075485262401, 31.0923789124577, 10.6910927631052], [102.764361319494,
+      131.773911108248, 53.9369619557257], [108.738990177245, 139.783894099722, 50.3201608622516],
+      [119.127983163245, 146.422888825981, 76.6579379810746]], "algorithms": [["std::set"],
+      ["boost::set"], ["lib_calvin::rb_tree"], ["lib_calvin::rb_tree+"], ["google::b_tree",
+      "B-tree"], ["lib_calvin::b_tree", "B-tree"], ["lib_calvin::b_plus_tree", "B-tree"],
+      ["std::unordered_set", "hash table"], ["boost::unordered_set", "hash table"],
+      ["lib_calvin::hash_table", "hash table"]], "test_cases": ["1K", "10K", "1M"]}'
+    - '2018-08-19 23:45:45.799904'
+    - '2018-08-19 23:45:45.799904'
+    - ''
+    - '2018-08-20 08:35:49'
+    - Container
+    - 32byte (vector) / minimum working set
+    - '1.0'
+  - - 2916
+    - Searching
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[37.3315414193452, 32.8816731072122,
+      10.8653564270979], [70.8449440324942, 55.182223966253, 14.1852870364352], [72.213462996618,
+      53.4068845034584, 14.1681615630164], [67.2766415500538, 52.2724883504952, 13.1818883887401],
+      [47.5907198096371, 41.8538658323176, 13.7724302341046], [54.6876424157355, 36.3779082621909,
+      13.7775622557247], [50.276942156378, 40.6883933645368, 12.3864478821826], [155.860349127182,
+      193.614174278572, 64.0227301573318], [183.368478958467, 201.542020391574, 63.3734293608484],
+      [190.851835358483, 212.857541542697, 95.2149297595801]], "algorithms": [["std::set"],
+      ["boost::set"], ["lib_calvin::rb_tree"], ["lib_calvin::rb_tree+"], ["google::b_tree",
+      "B-tree"], ["lib_calvin::b_tree", "B-tree"], ["lib_calvin::b_plus_tree", "B-tree"],
+      ["std::unordered_set", "hash table"], ["boost::unordered_set", "hash table"],
+      ["lib_calvin::hash_table", "hash table"]], "test_cases": ["1K", "10K", "1M"]}'
+    - '2018-08-19 23:45:45.851014'
+    - '2018-08-19 23:45:45.851014'
+    - ''
+    - '2018-08-20 08:36:13'
+    - Container
+    - 32byte (vector) / minimum working set
+    - '2.0'
+  - - 2917
+    - Iterating
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[86.587583340549, 60.7636779038962,
+      12.5210699870341], [86.587583340549, 54.7834137736459, 10.6688536963236], [86.587583340549,
+      60.5275581972472, 10.9969448617693], [86.587583340549, 64.0077833464549, 13.1053368181647],
+      [119.889701474643, 101.868263961046, 22.1039181228433], [194.817845314631, 139.159476760367,
+      30.047743761495], [207.813798836243, 151.317979602336, 30.9603705708674], [173.160173160173,
+      100.879670728755, 17.7730689413967], [183.351668500183, 110.931156124509, 17.653292097126],
+      [82.0277253711754, 73.3455086877755, 18.9816345472734]], "algorithms": [["std::set"],
+      ["boost::set"], ["lib_calvin::rb_tree"], ["lib_calvin::rb_tree+"], ["google::b_tree",
+      "B-tree"], ["lib_calvin::b_tree", "B-tree"], ["lib_calvin::b_plus_tree", "B-tree"],
+      ["std::unordered_set", "hash table"], ["boost::unordered_set", "hash table"],
+      ["lib_calvin::hash_table", "hash table"]], "test_cases": ["1K", "10K", "1M"]}'
+    - '2018-08-19 23:45:45.90218'
+    - '2018-08-19 23:45:45.90218'
+    - ''
+    - '2018-08-20 08:36:30'
+    - Container
+    - 32byte (vector) / minimum working set
+    - '3.0'
+  - - 2918
+    - Growing
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[12.109511422003, 15.3093181389598,
+      20.8482497883077], [13.2112901796661, 16.6207949500736, 22.3688274407946], [12.5183170492648,
+      15.8535179891335, 21.5100579930853], [12.3989876945689, 15.8344454120923, 20.9446581521003],
+      [26.7613001546823, 32.5856678565685, 44.618363086491], [34.056345673339, 45.8559869445356,
+      57.8751218034805], [33.3677624687132, 41.8301529445875, 54.8851110552198], [26.9679725728348,
+      27.7954268443637, 45.7481363590489], [23.8929746694129, 29.7840425591729, 47.3475866480731],
+      [33.2934554496957, 41.9804408228488, 38.5818808841737]], "algorithms": [["std::set"],
+      ["boost::set"], ["lib_calvin::rb_tree"], ["lib_calvin::rb_tree+"], ["google::b_tree",
+      "B-tree"], ["lib_calvin::b_tree", "B-tree"], ["lib_calvin::b_plus_tree", "B-tree"],
+      ["std::unordered_set", "hash table"], ["boost::unordered_set", "hash table"],
+      ["lib_calvin::hash_table", "hash table"]], "test_cases": ["1K", "10K", "1M"]}'
+    - '2018-08-19 23:45:45.95915'
+    - '2018-08-19 23:45:45.95915'
+    - ''
+    - '2018-08-20 08:36:57'
+    - Container
+    - 16byte / 32MB working set
+    - '0.0'
+  - - 2919
+    - Insert/Delete
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[11.0814687772479, 13.2038365208236,
+      16.2816453620867], [11.0274774559673, 14.4511020680592, 19.2204048549116], [13.3862285693174,
+      14.4945330313485, 18.3457717654143], [12.6253750374231, 14.4332329113623, 18.1454777006829],
+      [12.7093625876029, 25.7335927466289, 38.444474801779], [28.7401277840688, 31.2411158619148,
+      41.1919867149632], [24.8209379785716, 30.4071740037542, 39.5991352127626], [44.1395521229534,
+      70.7632258139845, 96.625377639384], [33.3433430049034, 53.9523855630262, 78.037627168579],
+      [61.8637009043483, 83.8657562516994, 131.50088668519]], "algorithms": [["std::set"],
+      ["boost::set"], ["lib_calvin::rb_tree"], ["lib_calvin::rb_tree+"], ["google::b_tree",
+      "B-tree"], ["lib_calvin::b_tree", "B-tree"], ["lib_calvin::b_plus_tree", "B-tree"],
+      ["std::unordered_set", "hash table"], ["boost::unordered_set", "hash table"],
+      ["lib_calvin::hash_table", "hash table"]], "test_cases": ["1K", "10K", "1M"]}'
+    - '2018-08-19 23:45:46.017535'
+    - '2018-08-19 23:45:46.017535'
+    - ''
+    - '2018-08-20 08:37:48'
+    - Container
+    - 16byte / 32MB working set
+    - '1.0'
+  - - 2920
+    - Searching
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[11.3088065574431, 13.339118360754,
+      16.8349973337152], [15.060625493681, 6.04530187005821, 22.8753659065446], [18.3177744523181,
+      17.8843466516712, 21.7970227439927], [14.8366164166995, 16.8300230309609, 20.167105770878],
+      [20.5099418285408, 30.2328807056229, 41.423787119997], [42.7107906719804, 48.919454851379,
+      58.6236298634606], [36.0599343514471, 43.9411880788162, 55.7324994533874], [71.6411259585023,
+      119.812802879277, 144.763836897792], [56.7848059569722, 90.4469272103631, 124.883483109857],
+      [89.8297739258571, 128.109260687506, 192.775696661154]], "algorithms": [["std::set"],
+      ["boost::set"], ["lib_calvin::rb_tree"], ["lib_calvin::rb_tree+"], ["google::b_tree",
+      "B-tree"], ["lib_calvin::b_tree", "B-tree"], ["lib_calvin::b_plus_tree", "B-tree"],
+      ["std::unordered_set", "hash table"], ["boost::unordered_set", "hash table"],
+      ["lib_calvin::hash_table", "hash table"]], "test_cases": ["1K", "10K", "1M"]}'
+    - '2018-08-19 23:45:46.063205'
+    - '2018-08-19 23:45:46.063205'
+    - ''
+    - '2018-08-20 08:38:38'
+    - Container
+    - 16byte / 32MB working set
+    - '2.0'
+  - - 2921
+    - Iterating
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[36.8382964741311, 18.608992337766,
+      15.9315906419525], [31.7297986802974, 14.1836162594821, 12.2533909344819], [28.5229074386445,
+      14.1587485399322, 11.644858302191], [41.098303669571, 20.1883553364536, 17.4932475408496],
+      [124.128740371334, 107.318838958262, 103.893982839727], [176.881515209511, 143.381386171095,
+      141.173567395343], [199.302004519771, 155.130033872643, 157.179458625219], [32.3020802685052,
+      17.9973325973384, 17.7151924436343], [33.1217049596358, 16.520653551107, 17.8182778522201],
+      [79.1012609650662, 53.0647563283635, 49.2578261757812]], "algorithms": [["std::set"],
+      ["boost::set"], ["lib_calvin::rb_tree"], ["lib_calvin::rb_tree+"], ["google::b_tree",
+      "B-tree"], ["lib_calvin::b_tree", "B-tree"], ["lib_calvin::b_plus_tree", "B-tree"],
+      ["std::unordered_set", "hash table"], ["boost::unordered_set", "hash table"],
+      ["lib_calvin::hash_table", "hash table"]], "test_cases": ["1K", "10K", "1M"]}'
+    - '2018-08-19 23:45:46.116749'
+    - '2018-08-19 23:45:46.116749'
+    - ''
+    - '2018-08-20 08:39:08'
+    - Container
+    - 16byte / 32MB working set
+    - '3.0'
+  - - 2922
+    - Growing
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[13.4653181374974, 17.8538953256865,
+      22.9142162776635], [14.3958352963654, 18.1602752892725, 24.459000769292], [14.4392463104248,
+      19.0733369296322, 24.6874747997853], [12.9915735636193, 16.796775923809, 22.2620578343466],
+      [21.7805604541145, 26.5067332845668, 34.3553849828897], [20.2847837589311, 26.3541210032716,
+      33.9284372527873], [18.8421341498024, 24.5831821092057, 32.3543827106203], [27.0228341056594,
+      27.8930070613503, 46.7834218453483], [24.7018087195433, 29.1354255726311, 48.4415933262807],
+      [33.0890070465467, 42.2372346077333, 39.8061908829456]], "algorithms": [["std::set"],
+      ["boost::set"], ["lib_calvin::rb_tree"], ["lib_calvin::rb_tree+"], ["google::b_tree",
+      "B-tree"], ["lib_calvin::b_tree", "B-tree"], ["lib_calvin::b_plus_tree", "B-tree"],
+      ["std::unordered_set", "hash table"], ["boost::unordered_set", "hash table"],
+      ["lib_calvin::hash_table", "hash table"]], "test_cases": ["1K", "10K", "1M"]}'
+    - '2018-08-19 23:45:46.159282'
+    - '2018-08-19 23:45:46.159282'
+    - ''
+    - '2018-08-20 08:39:22'
+    - Container
+    - 32byte / 32MB working set
+    - '0.0'
+  - - 2923
+    - Insert/Delete
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[12.9077860301007, 15.4476159380221,
+      19.0570370213538], [14.3741612377456, 17.4387860003852, 21.7253595358995], [13.917258866714,
+      16.6400333688136, 21.7475704923282], [13.9507790659111, 15.9889338385983, 20.7305629958299],
+      [23.8009526331291, 31.1880130659894, 35.893542701141], [18.3745247406208, 23.8391468505458,
+      25.2483056269951], [13.2144871982464, 19.0017291679108, 24.962088156556], [45.8725198697202,
+      73.1450744371009, 96.2520845054801], [35.2374042885295, 57.2069816290266, 52.6282435525321],
+      [37.556044650707, 73.077626652073, 121.080609042915]], "algorithms": [["std::set"],
+      ["boost::set"], ["lib_calvin::rb_tree"], ["lib_calvin::rb_tree+"], ["google::b_tree",
+      "B-tree"], ["lib_calvin::b_tree", "B-tree"], ["lib_calvin::b_plus_tree", "B-tree"],
+      ["std::unordered_set", "hash table"], ["boost::unordered_set", "hash table"],
+      ["lib_calvin::hash_table", "hash table"]], "test_cases": ["1K", "10K", "1M"]}'
+    - '2018-08-19 23:45:46.212624'
+    - '2018-08-19 23:45:46.212624'
+    - ''
+    - '2018-08-20 08:39:48'
+    - Container
+    - 32byte / 32MB working set
+    - '1.0'
+  - - 2924
+    - Searching
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[10.2218081950744, 14.9405416989216,
+      19.7881008873552], [16.2330876151603, 19.4303231752172, 26.5245806635187], [18.0722150169974,
+      20.5374631281226, 24.4330603882953], [15.7536785489251, 18.3976962290307, 25.7442164325623],
+      [19.9107867994961, 26.2581190432308, 35.5987854548774], [25.5413292101909, 34.2756416865701,
+      40.5729997416717], [23.1507794057149, 30.3192526344651, 36.8076470616199], [70.884269686576,
+      128.244536910972, 145.649667935003], [58.1712314407595, 94.6854866906608, 127.527054030682],
+      [91.1514764959233, 132.516388449, 193.675848873424]], "algorithms": [["std::set"],
+      ["boost::set"], ["lib_calvin::rb_tree"], ["lib_calvin::rb_tree+"], ["google::b_tree",
+      "B-tree"], ["lib_calvin::b_tree", "B-tree"], ["lib_calvin::b_plus_tree", "B-tree"],
+      ["std::unordered_set", "hash table"], ["boost::unordered_set", "hash table"],
+      ["lib_calvin::hash_table", "hash table"]], "test_cases": ["1K", "10K", "1M"]}'
+    - '2018-08-19 23:45:46.263297'
+    - '2018-08-19 23:45:46.263297'
+    - ''
+    - '2018-08-20 08:40:12'
+    - Container
+    - 32byte / 32MB working set
+    - '2.0'
+  - - 2925
+    - Iterating
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[30.3475897610388, 18.3684614545459,
+      16.795076503169], [25.768019028136, 13.2242605142293, 12.3880117543402], [21.1292895310202,
+      13.4094304206312, 12.203525120029], [33.5336015909682, 19.6438418255069, 18.2201899017513],
+      [69.446667702348, 59.537081331523, 58.368747598126], [97.1054798564393, 83.6064547192876,
+      81.7064556679155], [115.498287911129, 94.3628661739226, 94.2174066658815], [27.0922754775081,
+      16.7993307012254, 19.9613408711349], [27.143703871311, 17.1831772227363, 20.5395383442988],
+      [72.5145493191754, 48.9468953106672, 48.1500022799026]], "algorithms": [["std::set"],
+      ["boost::set"], ["lib_calvin::rb_tree"], ["lib_calvin::rb_tree+"], ["google::b_tree",
+      "B-tree"], ["lib_calvin::b_tree", "B-tree"], ["lib_calvin::b_plus_tree", "B-tree"],
+      ["std::unordered_set", "hash table"], ["boost::unordered_set", "hash table"],
+      ["lib_calvin::hash_table", "hash table"]], "test_cases": ["1K", "10K", "1M"]}'
+    - '2018-08-19 23:45:46.314608'
+    - '2018-08-19 23:45:46.314608'
+    - ''
+    - '2018-08-20 08:40:27'
+    - Container
+    - 32byte / 32MB working set
+    - '3.0'
+  - - 2926
+    - Growing
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[14.4622466666329, 20.7979508195017,
+      21.6264481412787], [14.8816413212225, 21.5762488307651, 23.0545132442628], [16.5506232589572,
+      22.5418919647367, 23.6660371033545], [15.7392944113139, 21.2512021155694, 23.0248433880262],
+      [15.6119348433401, 21.0797403716119, 22.1491516031564], [17.0103937077737, 21.5343479405665,
+      21.879869990957], [14.5890911004998, 19.1107689556787, 19.7944900413822], [30.4081793299266,
+      33.4337335970388, 48.6111575409988], [28.3121173493475, 33.8983086597086, 47.9628484793331],
+      [35.0498638055759, 45.9511488027168, 38.5285626579464]], "algorithms": [["std::set"],
+      ["boost::set"], ["lib_calvin::rb_tree"], ["lib_calvin::rb_tree+"], ["google::b_tree",
+      "B-tree"], ["lib_calvin::b_tree", "B-tree"], ["lib_calvin::b_plus_tree", "B-tree"],
+      ["std::unordered_set", "hash table"], ["boost::unordered_set", "hash table"],
+      ["lib_calvin::hash_table", "hash table"]], "test_cases": ["1K", "10K", "1M"]}'
+    - '2018-08-19 23:45:46.363986'
+    - '2018-08-19 23:45:46.363986'
+    - ''
+    - '2018-08-20 08:40:39'
+    - Container
+    - 64byte / 32MB working set
+    - '0.0'
+  - - 2927
+    - Insert/Delete
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[14.1021990785915, 17.4737824242196,
+      18.0797123111673], [16.4227066297832, 20.7299632754881, 21.0699101677735], [15.2533661916602,
+      18.7024745963145, 20.4005663762165], [14.7978552304317, 18.3487229849458, 20.0090057456553],
+      [17.3342471409138, 20.6421378252974, 20.7358032801361], [13.6133814021226, 17.8609880727179,
+      18.4746462077184], [11.6701950139769, 15.0573194004365, 16.2936549583508], [47.0930474320703,
+      75.1546959209271, 93.9391555222552], [39.2739061182933, 62.2587120379752, 76.7844528162993],
+      [66.9977711404823, 96.4501459483608, 120.633657796424]], "algorithms": [["std::set"],
+      ["boost::set"], ["lib_calvin::rb_tree"], ["lib_calvin::rb_tree+"], ["google::b_tree",
+      "B-tree"], ["lib_calvin::b_tree", "B-tree"], ["lib_calvin::b_plus_tree", "B-tree"],
+      ["std::unordered_set", "hash table"], ["boost::unordered_set", "hash table"],
+      ["lib_calvin::hash_table", "hash table"]], "test_cases": ["1K", "10K", "1M"]}'
+    - '2018-08-19 23:45:46.417063'
+    - '2018-08-19 23:45:46.417063'
+    - ''
+    - '2018-08-20 08:40:59'
+    - Container
+    - 64byte / 32MB working set
+    - '1.0'
+  - - 2928
+    - Searching
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[12.7962476897494, 16.4390082000038,
+      18.1524720830304], [18.0075734091335, 23.8317958206127, 24.783713438382], [20.1916680629766,
+      22.742831350898, 24.0690812106112], [20.5439600993563, 22.3757311189342, 23.5246120200196],
+      [15.2433710123551, 20.3488594905148, 22.1164767685576], [20.8533261701695, 24.5921249884151,
+      25.0000178846282], [16.5335930121497, 20.2436973171554, 20.8375026371062], [77.1649971033546,
+      130.890969887253, 139.221151471156], [61.4509818115541, 94.1380547124098, 119.633274320386],
+      [88.8271914956136, 132.340730797867, 170.429567988314]], "algorithms": [["std::set"],
+      ["boost::set"], ["lib_calvin::rb_tree"], ["lib_calvin::rb_tree+"], ["google::b_tree",
+      "B-tree"], ["lib_calvin::b_tree", "B-tree"], ["lib_calvin::b_plus_tree", "B-tree"],
+      ["std::unordered_set", "hash table"], ["boost::unordered_set", "hash table"],
+      ["lib_calvin::hash_table", "hash table"]], "test_cases": ["1K", "10K", "1M"]}'
+    - '2018-08-19 23:45:46.472199'
+    - '2018-08-19 23:45:46.472199'
+    - ''
+    - '2018-08-20 08:41:19'
+    - Container
+    - 64byte / 32MB working set
+    - '2.0'
+  - - 2929
+    - Iterating
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[26.8583753035735, 17.5179717748337,
+      16.6308302764066], [21.3131973065404, 13.5146586068847, 11.9773723003407], [18.9545108797945,
+      13.3884663236024, 12.0771895210912], [27.5544778203262, 19.7994317563086, 17.2709558221903],
+      [32.2642988112864, 26.085214029442, 25.8936654876072], [42.0513559754094, 37.0916606893455,
+      35.4935210836484], [51.668868277144, 44.1464773053555, 41.1487581099059], [21.5757848580106,
+      15.6518091033989, 17.5085265211018], [21.013205496836, 15.0862583979166, 17.1062312355335],
+      [69.3169397846517, 52.9322956768394, 48.8349399540229]], "algorithms": [["std::set"],
+      ["boost::set"], ["lib_calvin::rb_tree"], ["lib_calvin::rb_tree+"], ["google::b_tree",
+      "B-tree"], ["lib_calvin::b_tree", "B-tree"], ["lib_calvin::b_plus_tree", "B-tree"],
+      ["std::unordered_set", "hash table"], ["boost::unordered_set", "hash table"],
+      ["lib_calvin::hash_table", "hash table"]], "test_cases": ["1K", "10K", "1M"]}'
+    - '2018-08-19 23:45:46.529985'
+    - '2018-08-19 23:45:46.529985'
+    - ''
+    - '2018-08-20 08:41:32'
+    - Container
+    - 64byte / 32MB working set
+    - '3.0'
+  - - 2930
+    - Growing
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[8.89113915058953, 11.2193232288817,
+      14.4477851576472], [8.69796641284329, 11.0829451742157, 14.3137223552102], [9.04404250636067,
+      11.8151544140056, 15.3814657519082], [8.99602605496836, 11.1311665048418, 14.655732558224],
+      [9.61052871093556, 11.9241380612954, 14.9274590367846], [9.73981706873624, 12.2552027839605,
+      15.1854569840988], [9.71071434013475, 11.6201559123832, 15.5188675281665], [22.6558397228025,
+      21.1361029689689, 37.6889092432192], [18.9635625449235, 21.6785346888748, 37.7174988638691],
+      [20.8433098967683, 25.92426843702, 24.7863966489493]], "algorithms": [["std::set"],
+      ["boost::set"], ["lib_calvin::rb_tree"], ["lib_calvin::rb_tree+"], ["google::b_tree",
+      "B-tree"], ["lib_calvin::b_tree", "B-tree"], ["lib_calvin::b_plus_tree", "B-tree"],
+      ["std::unordered_set", "hash table"], ["boost::unordered_set", "hash table"],
+      ["lib_calvin::hash_table", "hash table"]], "test_cases": ["1K", "10K", "1M"]}'
+    - '2018-08-19 23:45:46.587096'
+    - '2018-08-19 23:45:46.587096'
+    - ''
+    - '2018-08-20 08:42:11'
+    - Container
+    - 32byte (vector) / 32MB working set
+    - '0.0'
+  - - 2931
+    - Insert/Delete
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[7.34408114557511, 8.90754075136799,
+      11.2001728562308], [8.39186383290134, 10.2232180595828, 12.1358221234628], [8.11883043901245,
+      9.9940711727401, 12.969103963011], [7.87136283018104, 9.77099842360248, 12.7703318769664],
+      [9.94566314576323, 12.4583223781998, 14.7128168330551], [7.81835412499302, 9.42601451351104,
+      11.6263476630587], [7.00133152723251, 8.60146670356135, 10.8705270408968], [26.2314436472388,
+      44.9859005190593, 54.9316853715042], [23.1201007543164, 39.0159418227916, 50.1301134807719],
+      [36.4151220494693, 50.3526740453326, 75.8940102783258]], "algorithms": [["std::set"],
+      ["boost::set"], ["lib_calvin::rb_tree"], ["lib_calvin::rb_tree+"], ["google::b_tree",
+      "B-tree"], ["lib_calvin::b_tree", "B-tree"], ["lib_calvin::b_plus_tree", "B-tree"],
+      ["std::unordered_set", "hash table"], ["boost::unordered_set", "hash table"],
+      ["lib_calvin::hash_table", "hash table"]], "test_cases": ["1K", "10K", "1M"]}'
+    - '2018-08-19 23:45:46.642034'
+    - '2018-08-19 23:45:46.642034'
+    - ''
+    - '2018-08-20 08:43:15'
+    - Container
+    - 32byte (vector) / 32MB working set
+    - '1.0'
+  - - 2932
+    - Searching
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[7.22289642275642, 8.80980473788245,
+      10.9498526590774], [9.21166979712727, 11.4023303155309, 14.3306341150384], [9.10607650306265,
+      11.1644822846405, 14.2817545986278], [9.20440280826698, 11.2801365061959, 14.0065378057934],
+      [9.30822849912544, 11.9314254368045, 14.7850648885392], [9.43662012678703, 11.9404951157345,
+      14.5713353401821], [7.99710697724272, 10.4028236869799, 12.7880717902873], [29.7429773992385,
+      51.692481633532, 65.6868157622306], [28.8431762042181, 48.4192515826599, 63.8983562359214],
+      [47.1240161870053, 67.3904561396404, 96.9665289443597]], "algorithms": [["std::set"],
+      ["boost::set"], ["lib_calvin::rb_tree"], ["lib_calvin::rb_tree+"], ["google::b_tree",
+      "B-tree"], ["lib_calvin::b_tree", "B-tree"], ["lib_calvin::b_plus_tree", "B-tree"],
+      ["std::unordered_set", "hash table"], ["boost::unordered_set", "hash table"],
+      ["lib_calvin::hash_table", "hash table"]], "test_cases": ["1K", "10K", "1M"]}'
+    - '2018-08-19 23:45:46.685402'
+    - '2018-08-19 23:45:46.685402'
+    - ''
+    - '2018-08-20 08:44:18'
+    - Container
+    - 32byte (vector) / 32MB working set
+    - '2.0'
+  - - 2933
+    - Iterating
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[20.4952433716897, 13.5307321015036,
+      12.9785826391003], [20.1269596538791, 11.3692358414842, 10.6273157850986], [18.3200979480373,
+      11.3237224296093, 10.7873694488278], [21.3593463971653, 13.7213847039657, 13.0869599698686],
+      [29.5972559318524, 23.0103047047559, 21.9445750695275], [37.5835901326088, 31.21959601593,
+      30.2172663756583], [39.877992484434, 32.5374256043965, 31.632076937815], [23.7755072855168,
+      13.7166146857264, 17.7758052164238], [24.1540981219657, 13.6943186777237, 17.7197241811525],
+      [32.7012679655043, 21.4779653794528, 18.0878226736428]], "algorithms": [["std::set"],
+      ["boost::set"], ["lib_calvin::rb_tree"], ["lib_calvin::rb_tree+"], ["google::b_tree",
+      "B-tree"], ["lib_calvin::b_tree", "B-tree"], ["lib_calvin::b_plus_tree", "B-tree"],
+      ["std::unordered_set", "hash table"], ["boost::unordered_set", "hash table"],
+      ["lib_calvin::hash_table", "hash table"]], "test_cases": ["1K", "10K", "1M"]}'
+    - '2018-08-19 23:45:46.738103'
+    - '2018-08-19 23:45:46.738103'
+    - ''
+    - '2018-08-20 08:45:04'
+    - Container
+    - 32byte (vector) / 32MB working set
+    - '3.0'
+  - - 3456
+    - Sorting 1K objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[213.19574330984], [262.602367572026],
+      [371.264929537898], [398.762066557879], [253.328270462892], [219.726295533499],
+      [265.846493187428], [209.059841383153], [219.719306561345], [244.695546545595],
+      [398.762066557879], [53.036625428862], [215.329029893458], [272.570543305139]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2018-12-10 03:22:53.986186'
+    - '2018-12-10 03:22:53.986186'
+    - ''
+    - '2018-12-10 11:53:17'
+    - Sorting
+    - 16byte / Random array
+    - '0.0'
+  - - 3457
+    - Sorting 1K objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[211.104311441297], [256.345985786252],
+      [347.315364220531], [358.881716489097], [234.058051671539], [224.306899564298],
+      [226.662136729956], [203.139399470141], [177.956959038105], [241.94442502827],
+      [358.881716489097], [53.4312730906781], [213.19574330984], [215.329029893458]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2018-12-10 03:22:54.045436'
+    - '2018-12-10 03:22:54.045436'
+    - ''
+    - '2018-12-10 11:53:18'
+    - Sorting
+    - 32byte / Random array
+    - '0.0'
+  - - 3458
+    - Sorting 1K objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[145.490749151881], [184.039944556459],
+      [241.94442502827], [253.328270462892], [161.899249513257], [137.153882239296],
+      [166.922535316003], [122.345606329717], [118.963856283921], [173.648951206187],
+      [76.3574743990244], [50.7848498675352], [142.601417786217], [98.3240378475858]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2018-12-10 03:22:54.09847'
+    - '2018-12-10 03:22:54.09847'
+    - ''
+    - '2018-12-10 11:53:19'
+    - Sorting
+    - 64byte / Random array
+    - '0.0'
+  - - 3459
+    - Sorting 1K objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[91.6293744227481], [107.128538313335],
+      [94.8580824336346], [99.6890779585548], [111.570166343349], [103.028551299568],
+      [115.148446057379], [93.6213173449818], [83.7852082451803], [106.59787165492],
+      [99.6890779585548], [46.607574869491], [100.621335144166], [103.027014660872]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2018-12-10 03:22:54.152075'
+    - '2018-12-10 03:22:54.152075'
+    - ''
+    - '2018-12-10 11:53:26'
+    - Sorting
+    - 40byte (vector) / Random array
+    - '0.0'
+  - - 3460
+    - Sorting 10K objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[192.428909901808], [254.75019283894],
+      [420.356188362642], [443.74565169307], [241.061057959201], [194.779023264261],
+      [240.053283395135], [181.826337035061], [214.737297440412], [246.441061610027],
+      [420.972926726733], [445.811912659728], [194.120134466457], [289.711694734305]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2018-12-10 03:22:54.204054'
+    - '2018-12-10 03:22:54.204054'
+    - ''
+    - '2018-12-10 11:53:27'
+    - Sorting
+    - 16byte / Random array
+    - '1.0'
+  - - 3461
+    - Sorting 10K objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[200.491531602397], [244.34305377673],
+      [380.773523450242], [394.372810775536], [217.998285711017], [202.899982860458],
+      [212.984901338591], [176.89706684342], [191.147765085301], [244.135798421159],
+      [232.472812841722], [355.326238849734], [202.613872531242], [253.177392780895]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2018-12-10 03:22:54.257245'
+    - '2018-12-10 03:22:54.257245'
+    - ''
+    - '2018-12-10 11:53:28'
+    - Sorting
+    - 32byte / Random array
+    - '1.0'
+  - - 3462
+    - Sorting 10K objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[132.611417867125], [175.384276780364],
+      [253.400988034088], [257.261298324824], [150.710742153042], [129.79366771197],
+      [167.212651266052], [104.973944081799], [141.709534991056], [172.227683164687],
+      [164.812644330568], [263.882405394811], [134.980499218522], [157.576126849675]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2018-12-10 03:22:54.316312'
+    - '2018-12-10 03:22:54.316312'
+    - ''
+    - '2018-12-10 11:53:29'
+    - Sorting
+    - 64byte / Random array
+    - '1.0'
+  - - 3463
+    - Sorting 10K objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[75.3158107637623], [92.6141708721216],
+      [84.2935243913764], [90.2557776945762], [83.5332285984729], [79.4640847859612],
+      [92.2273572879568], [71.4188594029122], [78.8746297009485], [93.7328556829543],
+      [101.737654376227], [147.157071538321], [82.3354547142787], [134.349063777362]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2018-12-10 03:22:54.373032'
+    - '2018-12-10 03:22:54.373032'
+    - ''
+    - '2018-12-10 11:53:37'
+    - Sorting
+    - 40byte (vector) / Random array
+    - '1.0'
+  - - 3464
+    - Sorting 100K objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[186.285846908226], [250.701785866456],
+      [460.338223232906], [489.604000590702], [231.266693322274], [188.864136611848],
+      [237.338555756167], [170.375833570905], [224.313790097012], [243.837270448698],
+      [923.28167410506], [1060.8322021252], [866.230736904334], [486.418615295868]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2018-12-10 03:22:54.429041'
+    - '2018-12-10 03:22:54.429041'
+    - ''
+    - '2018-12-10 11:53:40'
+    - Sorting
+    - 16byte / Random array
+    - '2.0'
+  - - 3465
+    - Sorting 100K objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[194.905563638784], [239.412742816276],
+      [401.027619113262], [413.646412662851], [192.047764287496], [184.438107581479],
+      [196.087648237128], [167.794859363157], [178.449429261466], [425.616310861631],
+      [764.386734851111], [964.471519713885], [715.612579955771], [357.734912921614]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2018-12-10 03:22:54.482305'
+    - '2018-12-10 03:22:54.482305'
+    - ''
+    - '2018-12-10 11:53:43'
+    - Sorting
+    - 32byte / Random array
+    - '2.0'
+  - - 3466
+    - Sorting 100K objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[127.760642775359], [172.405680019549],
+      [249.429836164944], [262.780724806799], [126.019962849103], [111.201205506627],
+      [143.322548468559], [98.8404137654108], [107.729609421449], [409.58642158574],
+      [515.113484757465], [634.736076153949], [420.037040880279], [214.76938426042]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2018-12-10 03:22:54.534892'
+    - '2018-12-10 03:22:54.534892'
+    - ''
+    - '2018-12-10 11:53:47'
+    - Sorting
+    - 64byte / Random array
+    - '2.0'
+  - - 3467
+    - Sorting 100K objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[61.087977205331], [77.3380846549528],
+      [72.2877248706873], [78.891987412355], [62.6043868975627], [61.2182324473952],
+      [72.5405059720146], [56.341688715025], [61.5426224306549], [180.423146419044],
+      [240.26221086845], [241.409655840036], [269.651838529434], [149.732824929945]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2018-12-10 03:22:54.588118'
+    - '2018-12-10 03:22:54.588118'
+    - ''
+    - '2018-12-10 11:54:10'
+    - Sorting
+    - 40byte (vector) / Random array
+    - '2.0'
+  - - 3468
+    - Sorting 1M objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[177.203368809307], [242.629691806072],
+      [471.202557529669], [498.582441862411], [204.96964792789], [177.0583866993],
+      [219.177643792145], [164.009284873223], [194.045815114759], [1014.83540939983],
+      [1627.01871914658], [1704.89137756232], [996.772535747875], [608.210443248371]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2018-12-10 03:22:54.643548'
+    - '2018-12-10 03:22:54.643548'
+    - ''
+    - '2018-12-10 11:54:21'
+    - Sorting
+    - 16byte / Random array
+    - '3.0'
+  - - 3469
+    - Sorting 1M objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[185.745093821324], [226.358225039673],
+      [352.176548003172], [366.987004278097], [161.351029638047], [173.614337447759],
+      [181.582494905748], [153.422006731932], [144.791271815924], [713.608465483637],
+      [835.688916601526], [984.986028043171], [462.39432414168], [342.488708341823]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2018-12-10 03:22:54.701825'
+    - '2018-12-10 03:22:54.701825'
+    - ''
+    - '2018-12-10 11:54:35'
+    - Sorting
+    - 32byte / Random array
+    - '3.0'
+  - - 3470
+    - Sorting 1M objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[116.937632773812], [153.143761826723],
+      [204.116677467991], [202.040588022179], [93.8267878881915], [102.184747189184],
+      [122.901182320518], [89.704026726074], [80.0460171860894], [336.662712103421],
+      [421.282052134777], [454.978729351942], [211.067389806335], [155.269533036346]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2018-12-10 03:22:54.753665'
+    - '2018-12-10 03:22:54.753665'
+    - ''
+    - '2018-12-10 11:54:59'
+    - Sorting
+    - 64byte / Random array
+    - '3.0'
+  - - 3471
+    - Sorting 1M objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[37.4588644758089], [51.1110501186989],
+      [52.179361328974], [57.079484055421], [26.0707120956545], [35.079613351998],
+      [39.2365776208503], [30.9516197729713], [35.0868728211083], [131.972988004431],
+      [133.403415976159], [151.78679868152], [102.246126794635], [77.1330785132474]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2018-12-10 03:22:54.803133'
+    - '2018-12-10 03:22:54.803133'
+    - ''
+    - '2018-12-10 11:56:58'
+    - Sorting
+    - 40byte (vector) / Random array
+    - '3.0'
+  - - 3472
+    - Sorting 1K objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[21586.7352468192], [489.391093091189],
+      [21586.7352468192], [1538.132994652], [1076.64514946729], [21586.7352468192],
+      [1794.68830319099], [406.290746911077], [2692.03245478649], [4306.58059786916],
+      [1538.132994652], [54.1025170856769], [5384.06490957298], [2392.71052268172]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2018-12-10 03:22:54.855945'
+    - '2018-12-10 03:22:54.855945'
+    - ''
+    - '2018-12-10 11:56:59'
+    - Sorting
+    - 16byte / All equal
+    - '0.0'
+  - - 3473
+    - Sorting 1K objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[10776.529296384], [377.782623953084],
+      [10776.529296384], [1346.01622739325], [552.134543919921], [21586.7352468192],
+      [566.673935929626], [7180.61879312072], [3076.95112649538], [4306.58059786916],
+      [86.1305380105253], [52.011529673389], [4306.58059786916], [797.570174227241]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2018-12-10 03:22:54.907632'
+    - '2018-12-10 03:22:54.907632'
+    - ''
+    - '2018-12-10 11:56:59'
+    - Sorting
+    - 64byte / All equal
+    - '0.0'
+  - - 3474
+    - Sorting 1K objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[21586.7352468192], [1076.64514946729],
+      [7180.61879312072], [1538.132994652], [1346.01622739325], [21586.7352468192],
+      [1133.34787185925], [10776.529296384], [3076.95112649538], [4306.58059786916],
+      [1538.132994652], [52.1375435235762], [4306.58059786916], [1435.52686595639]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2018-12-10 03:22:54.96234'
+    - '2018-12-10 03:22:54.96234'
+    - ''
+    - '2018-12-10 11:56:59'
+    - Sorting
+    - 32byte / All equal
+    - '0.0'
+  - - 3475
+    - Sorting 1K objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[1133.34787185925], [166.922535316003],
+      [978.851534502216], [253.328270462892], [279.654883566744], [2392.71052268172],
+      [316.666144631069], [1794.68830319099], [448.613799128597], [1538.132994652],
+      [253.328270462892], [52.011529673389], [1538.132994652], [371.264929537898]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2018-12-10 03:22:55.016039'
+    - '2018-12-10 03:22:55.016039'
+    - ''
+    - '2018-12-10 11:57:05'
+    - Sorting
+    - 40byte (vector) / All equal
+    - '0.0'
+  - - 3476
+    - Sorting 10K objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[8972.56733753159], [323.315045774109],
+      [6241.7595364436], [1270.3742530415], [361.592533330304], [9570.17910637592],
+      [389.030685064738], [8700.49156619704], [1181.50965594789], [8203.01066260793],
+      [99.3781849960259], [246.441061610027], [8444.43052349517], [170.286876968602]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2018-12-10 03:22:55.07739'
+    - '2018-12-10 03:22:55.07739'
+    - ''
+    - '2018-12-10 11:57:06'
+    - Sorting
+    - 64byte / All equal
+    - '1.0'
+  - - 3477
+    - Sorting 10K objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[16890.4096313519], [938.250941983006],
+      [9570.17910637592], [1560.36057600355], [751.582293340965], [20508.4399286933],
+      [757.528981771959], [16890.4096313519], [2021.89545627647], [14355.2686595639],
+      [195.308535197203], [381.788427055661], [14355.2686595639], [345.492275362404]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2018-12-10 03:22:55.130759'
+    - '2018-12-10 03:22:55.130759'
+    - ''
+    - '2018-12-10 11:57:06'
+    - Sorting
+    - 32byte / All equal
+    - '1.0'
+  - - 3478
+    - Sorting 10K objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[20508.4399286933], [445.814070552004],
+      [19140.3582127518], [1631.27475106289], [1032.74619288162], [26106.4069500459],
+      [1535.31261409838], [23929.1773758799], [2126.70646808354], [15951.4034845448],
+      [423.456137449251], [638.007520866175], [19140.3582127518], [753.550011615874]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2018-12-10 03:22:55.185802'
+    - '2018-12-10 03:22:55.185802'
+    - ''
+    - '2018-12-10 11:57:06'
+    - Sorting
+    - 16byte / All equal
+    - '1.0'
+  - - 3479
+    - Sorting 100K objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[23153.6591283288], [406.985269355795],
+      [18310.2334159871], [1607.88311453015], [951.431119756495], [31759.7943861248],
+      [1513.61983547284], [32924.1748597867], [2375.11149768743], [23925.4477659398],
+      [1215.30509654209], [1631.27128402274], [23925.4477659398], [854.47520387676]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2018-12-10 03:22:55.242894'
+    - '2018-12-10 03:22:55.242894'
+    - ''
+    - '2018-12-10 11:57:13'
+    - Sorting
+    - 16byte / All equal
+    - '2.0'
+  - - 3480
+    - Sorting 10K objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[1400.51401556721], [156.973211099457],
+      [1221.72499230331], [239.253234656309], [217.009534683161], [2496.56846253285],
+      [252.954886489692], [2496.56846253285], [362.047373857143], [2278.60279853942],
+      [137.831889798066], [235.910935309418], [2453.86592741946], [166.244129271715]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2018-12-10 03:22:55.298482'
+    - '2018-12-10 03:22:55.298482'
+    - ''
+    - '2018-12-10 11:57:13'
+    - Sorting
+    - 40byte (vector) / All equal
+    - '1.0'
+  - - 3481
+    - Sorting 100K objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[19610.8223294841], [825.769916545288],
+      [11689.9107131676], [1480.52599520722], [492.222865358891], [23005.146298272],
+      [547.991342174341], [22153.0218683283], [1732.04315091127], [19718.6405387768],
+      [1051.50762719874], [1561.02595647461], [22153.0218683283], [537.969574124689]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2018-12-10 03:22:55.350934'
+    - '2018-12-10 03:22:55.350934'
+    - ''
+    - '2018-12-10 11:57:14'
+    - Sorting
+    - 32byte / All equal
+    - '2.0'
+  - - 3482
+    - Sorting 100K objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[10974.9341909308], [285.255268695459],
+      [6875.11224603795], [1092.81285233027], [221.941645624585], [13441.2000198125],
+      [259.287392307545], [12548.2844117868], [889.857694885757], [12726.2457331707],
+      [943.426452738661], [1074.49014025208], [13097.9026666631], [223.628896485747]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2018-12-10 03:22:55.400297'
+    - '2018-12-10 03:22:55.400297'
+    - ''
+    - '2018-12-10 11:57:15'
+    - Sorting
+    - 64byte / All equal
+    - '2.0'
+  - - 3483
+    - Sorting 100K objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[970.207245039399], [126.544310744743],
+      [701.347357425097], [185.928715586012], [146.266569785603], [1490.36370196808],
+      [193.268145801812], [1582.36087970794], [306.18521719186], [1531.71147081045],
+      [341.59496671468], [343.72153941464], [1317.47185949434], [221.093944217639]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2018-12-10 03:22:55.455881'
+    - '2018-12-10 03:22:55.455881'
+    - ''
+    - '2018-12-10 11:57:34'
+    - Sorting
+    - 40byte (vector) / All equal
+    - '2.0'
+  - - 3484
+    - Sorting 1M objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[15314.917561858], [375.613218811947],
+      [8746.05322136875], [1284.65708018087], [421.409847612492], [14009.6137565614],
+      [813.002579618892], [14758.5840807224], [1784.65708373708], [16245.017976408],
+      [2431.57144779976], [2957.18955964746], [17958.9443130347], [799.212384503285]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2018-12-10 03:22:55.508945'
+    - '2018-12-10 03:22:55.508945'
+    - ''
+    - '2018-12-10 11:57:37'
+    - Sorting
+    - 16byte / All equal
+    - '3.0'
+  - - 3485
+    - Sorting 1M objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[7400.85183413505], [606.292435960255],
+      [4241.24063690989], [881.479355321008], [222.050362149941], [9850.31536097899],
+      [403.9352617003], [8707.14845783241], [919.63435371127], [9190.25659789092],
+      [1487.17306092978], [1526.28145821212], [8945.89958038015], [349.356762457795]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2018-12-10 03:22:55.556823'
+    - '2018-12-10 03:22:55.556823'
+    - ''
+    - '2018-12-10 11:57:40'
+    - Sorting
+    - 32byte / All equal
+    - '3.0'
+  - - 3486
+    - Sorting 1M objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[4425.14921569468], [201.244684171568],
+      [2148.97994623382], [478.288298622424], [106.516182182032], [4602.98836950095],
+      [185.131857023726], [3956.04968545034], [442.678718894575], [4500.52840015606],
+      [666.319406814094], [665.948469494121], [4468.77281261065], [152.541106299007]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2018-12-10 03:22:55.609272'
+    - '2018-12-10 03:22:55.609272'
+    - ''
+    - '2018-12-10 11:57:47'
+    - Sorting
+    - 64byte / All equal
+    - '3.0'
+  - - 3487
+    - Sorting 1M objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[1004.02296064159], [98.4970227618762],
+      [715.897962373414], [144.827791160448], [87.5609860991774], [1647.49634028018],
+      [151.976418597269], [1616.99981108947], [224.90420733849], [1570.41746984964],
+      [324.183869590782], [325.084413712909], [1597.74274504892], [173.797207476638]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2018-12-10 03:22:55.664756'
+    - '2018-12-10 03:22:55.664756'
+    - ''
+    - '2018-12-10 11:58:53'
+    - Sorting
+    - 40byte (vector) / All equal
+    - '3.0'
+  - - 3489
+    - Iterating binary tree
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s", "results": [[119.904076738609, 106.753207933898, 32.3594330497892,
+      16.6266662330432, 14.0620633949036], [124.688279301746, 117.18795776546, 33.1756494713958,
+      19.8326949552427, 19.2507057058453]], "algorithms": [["null pointer"], ["null
+      flag"]], "test_cases": ["1K", "10K", "100K", "1M", "10M"]}'
+    - '2018-12-22 07:30:22.133444'
+    - '2018-12-22 07:30:22.133444'
+    - ''
+    - '2018-12-22 04:29:41'
+    - Etc.
+    - Conditional branches
+    - '0.0'
+  - - 3491
+    - Sorting into 100 groups, and sorting each group
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s", "results": [[21.4979791899561, 17.0431207999359, 14.1087343223744,
+      11.1719016484767, 9.32100613494176], [23.0904220929159, 18.8235648443574, 12.3428386356522,
+      8.8598397189432, 6.75907059213273]], "algorithms": [["One-pass sorting"], ["Two-pass
+      sorting"]], "test_cases": ["1K", "10K", "100K", "1M", "10M"]}'
+    - '2018-12-22 08:31:36.340814'
+    - '2018-12-22 08:31:36.340814'
+    - ''
+    - '2018-12-22 05:31:14'
+    - Etc.
+    - Conditional branches
+    - '0.0'
+  - - 3493
+    - Iterating speed (minimum working set)
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s", "results": [[445.43429844098, 124.189662452497, 83.1248976524698,
+      14.106692299467, 12.7086861582328], [1560.0624024961, 677.690431011114, 471.584665953002,
+      104.312943838537, 87.3929453897564]], "algorithms": [["linked list"], ["array
+      of pointers"]], "test_cases": ["1K", "10K", "100K", "1M", "10M"]}'
+    - '2018-12-22 08:40:09.137494'
+    - '2018-12-22 08:40:09.137494'
+    - ''
+    - '2018-12-22 05:37:27'
+    - Etc.
+    - Instruction-level parallelism
+    - '0.0'
+  - - 3494
+    - Sorting (final positions of elemements are known)
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s", "results": [[283.446712018141, 176.112148215984, 51.4386886837971,
+      28.5004892251478, 25.3160790314013], [173.190162798753, 86.3490747696638, 62.2192356989087,
+      13.3230072921216, 11.5342538249212], [50.2790487203982, 40.0152057781957, 33.2180666420853,
+      21.8103859138408, 16.8851202456193]], "algorithms": [["Linear method using O(N)
+      space"], ["Linear method inplace"], ["Block qsort"]], "test_cases": ["1K", "10K",
+      "100K", "1M", "10M"]}'
+    - '2018-12-22 08:49:50.313369'
+    - '2018-12-22 08:49:50.313369'
+    - ''
+    - '2018-12-22 05:49:39'
+    - Etc.
+    - Algorithm complexity (+ overhead), cache efficiency, and instruction-level parallelism
+    - '0.0'
+  - - 3495
+    - O(N) vs O(Nlog(N))
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s", "results": [[18.6657707096726, 10.3081518926798, 10.6370384017297,
+      5.15919232204459, 3.07350640076579], [9.95906822957644, 7.6084508585376, 4.80468568322823,
+      2.16586924992145, 1.15116968110545], [34.2547871064981, 24.3149860553555, 18.8269847171952,
+      15.462989188479, 13.069657950649], [66.326192213305, 56.6761693710645, 50.4480289450611,
+      44.7671880148926, 39.4252873359294]], "algorithms": [["std::unordered_set"],
+      ["std::set"], ["std::sort"], ["lib_calvin::block_qsort"]], "test_cases": ["1K",
+      "10K", "100K", "1M", "10M"]}'
+    - '2018-12-22 09:14:55.0436'
+    - '2018-12-22 09:14:55.0436'
+    - ''
+    - '2018-12-22 06:14:49'
+    - Etc.
+    - Algorithm complexity (+ overhead), cache efficiency, and instruction-level parallelism
+    - '0.0'
+  - - 3496
+    - Sorting 1K objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[236.623686465322], [283.325346744684],
+      [422.234430255632], [448.584666470689], [279.643562423372], [358.881716489097],
+      [269.161287366823], [341.798875753693], [234.050121263879], [256.345985786252],
+      [439.452591066998], [53.9668381170479], [341.798875753693], [290.987627068627]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2019-01-19 01:59:49.620316'
+    - '2019-01-19 01:59:49.620316'
+    - ''
+    - '2019-01-19 10:59:02'
+    - Sorting
+    - 8byte / Random array
+    - '0.0'
+  - - 3497
+    - Sorting 10K objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[225.003001687489], [270.852532626854],
+      [473.768318466312], [498.443591474071], [247.930365959051], [358.43060565047],
+      [243.101564977147], [325.14581145686], [227.498947071428], [258.651310254294],
+      [503.69088260095], [342.19720277969], [356.64987538921], [255.429843197281]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2019-01-19 01:59:49.690295'
+    - '2019-01-19 01:59:49.690295'
+    - ''
+    - '2019-01-19 10:59:03'
+    - Sorting
+    - 8byte / Random array
+    - '1.0'
+  - - 3498
+    - Sorting 100K objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[220.265883189455], [266.666052053843],
+      [518.91135924152], [554.939001863477], [245.589010326628], [361.992277310902],
+      [239.396463841402], [312.585283145515], [238.267933538902], [256.929542981809],
+      [1059.89172380314], [1284.46311314129], [1091.14947839725], [682.020700968166]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2019-01-19 01:59:49.746886'
+    - '2019-01-19 01:59:49.746886'
+    - ''
+    - '2019-01-19 10:59:05'
+    - Sorting
+    - 8byte / Random array
+    - '2.0'
+  - - 3499
+    - Sorting 100K objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[24414.0328370554], [1773.99492205038],
+      [22017.451644617], [1807.04607580919], [1755.76853915852], [32925.116438271],
+      [1867.21725009329], [36997.6395172255], [3023.41579260337], [37383.2693605554],
+      [1206.7221203743], [2556.12169131189], [31759.7943861248], [1927.38492450961]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2019-01-19 01:59:49.798499'
+    - '2019-01-19 01:59:49.798499'
+    - ''
+    - '2019-01-19 10:59:14'
+    - Sorting
+    - 8byte / All equal
+    - '2.0'
+  - - 3500
+    - Sorting 1M objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[215.443850451787], [261.708866341522],
+      [550.907013361893], [595.452435451151], [232.150282606508], [349.787619995361],
+      [230.4175588597], [304.369197890769], [209.580805910501], [852.208486718362],
+      [2348.55771891553], [2096.97145036217], [1953.70430112496], [773.752255529885]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2019-01-19 01:59:49.849556'
+    - '2019-01-19 01:59:49.849556'
+    - ''
+    - '2019-01-19 10:59:14'
+    - Sorting
+    - 8byte / Random array
+    - '3.0'
+  - - 3501
+    - Sorting 10K objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[20508.4399286933], [1876.5209999544],
+      [19140.3582127518], [1772.24174946627], [2007.74738892972], [26106.4069500459],
+      [1828.71842985728], [23929.1773758799], [2787.46455177537], [22087.1471750028],
+      [891.628141104008], [626.86080066265], [19140.3582127518], [2111.05924315849]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2019-01-19 01:59:49.902642'
+    - '2019-01-19 01:59:49.902642'
+    - ''
+    - '2019-01-19 10:59:14'
+    - Sorting
+    - 8byte / All equal
+    - '1.0'
+  - - 3502
+    - Sorting 1K objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[21586.7352468192], [1957.98052125344],
+      [21586.7352468192], [1656.53603812521], [2692.03245478649], [21586.7352468192],
+      [2153.29029893458], [769.066497326001], [3590.30939656036], [5384.06490957298],
+      [1656.53603812521], [53.9668381170479], [5384.06490957298], [2392.71052268172]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2019-01-19 01:59:49.951961'
+    - '2019-01-19 01:59:49.951961'
+    - ''
+    - '2019-01-19 10:59:14'
+    - Sorting
+    - 8byte / All equal
+    - '0.0'
+  - - 3503
+    - Sorting 1M objects
+    - Intel 8700 with 16GB ram, Windows 10, Visual C++ v141
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[28520.2246810338], [1650.71499161402],
+      [24330.7924306369], [1703.47305257801], [1492.06599687971], [37480.834498902],
+      [1554.59907544037], [42596.9474332218], [2475.17092344458], [44813.214002239],
+      [4660.26382492637], [4741.3301240471], [38144.7945474543], [1998.39910612218]],
+      "algorithms": [["std::sort", "in-place"], ["lib_calvin::qsort", "in-place"],
+      ["boost::pdqsort", "in-place"], ["lib_calvin::block_qsort", "in-place"], ["std::stable_sort",
+      "stable"], ["boost::spinsort", "stable"], ["lib_calvin::mergesort", "stable"],
+      ["boost::flat_stable_sort", "stable", "in-place"], ["lib_calvin::inplace_mergesort",
+      "stable", "in-place"], ["boost::block_indirect_sort_parallel", "in-place", "parallel"],
+      ["lib_calvin::block_qsort_parallel", "parallel", "in-place"], ["lib_calvin::block_qsort_parallel+",
+      "parallel", "in-place"], ["boost::sample_sort_parallel", "stable", "parallel"],
+      ["lib_calvin::mergesort_parallel", "stable", "parallel"]], "test_cases": ["comparison
+      sorting"]}'
+    - '2019-01-19 01:59:50.004673'
+    - '2019-01-19 01:59:50.004673'
+    - ''
+    - '2019-01-19 10:59:15'
+    - Sorting
+    - 8byte / All equal
+    - '3.0'
+  - - 3504
+    - 'Sorting 10M elements (type: Long)'
+    - Intel 8700
+    - 
+    - '{"unit": "M/s (higher is better)", "results": [[61], [205], [199], [7.5], [53],
+      [407], [732], [965], [822]], "algorithms": [["util.Sorting.quickSort"], ["java.util.Arrays.sort"],
+      ["lib_calvin::quicksort"], ["Parallel (Actor), threshold: 10"], ["Parallel (Actor),
+      threshold: 100"], ["Parallel (Actor), threshold: 1K"], ["Parallel (Actor), threshold:
+      10K"], ["Parallel (Actor), threshold: 100K"], ["Parallel (Actor), threshold:
+      1M"]], "test_cases": ["10K"]}'
+    - '2019-01-20 02:44:17.704139'
+    - '2019-01-20 02:44:17.704139'
+    - ''
+    - '2019-01-20 03:16:32'
+    - Etc.
+    - Akka (Scala)
+    - '1.0'
+
+---
+test:
+  columns:
+  - j
+  records: 
+  - - "{}"
+  - - "{}"
+  - - '{"a": 1}'
+  - - '{"b": 2}'
+  - - '{"a": 1, "b": 2}'
