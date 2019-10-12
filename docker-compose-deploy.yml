@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  rails:
+    image: calvincaulfield/bench
+    env_file:
+      - ../.env
+    environment:
+      - DB_DATABASE=something
+    ports:
+      - "3001:3001"
+    network_mode: "host"
+    restart: always
+
+

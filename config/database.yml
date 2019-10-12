@@ -14,11 +14,11 @@ development:
   <<: *default
   adapter: mysql2
   database: bench
-  encoding: utf8
-  username: calvin
-  password: <%= begin IO.read("../db_password") rescue "" end %>
-  host: calvin-mysql.ch9qkh6mj0md.ap-northeast-1.rds.amazonaws.com
-  port: 3306
+  encoding: utf8mb4
+  username: <%= ENV.fetch("DB_USER") %>
+  password: <%= ENV.fetch("DB_PASSWD") %>
+  host: <%= ENV.fetch("DB_HOST") %>
+  port: <%= ENV.fetch("DB_PORT") %>
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
