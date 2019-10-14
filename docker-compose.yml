@@ -6,5 +6,11 @@ services:
     image: calvincaulfield/bench
     ports:
       - 3001:3001
+    network_mode: "host"
+    restart: always
+    environment:
+      - DB_DATABASE=something
+    env_file:
+      - ../.env
 
 
