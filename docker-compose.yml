@@ -3,9 +3,8 @@ version: '3'
 services:
   rails:
     build: .
-    volumes:
-      - .:/usr/src/app
+    image: calvincaulfield/bench
     ports:
-      - 3000:3000
+      - 3001:3001
 
 
