@@ -8,8 +8,3 @@ COPY Gemfile ./
 RUN bundle install
 
 COPY . .
-
-
-EXPOSE 3001
-
-CMD rails s --binding 0.0.0.0 -p 3001
