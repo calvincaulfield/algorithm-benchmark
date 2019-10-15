@@ -11,6 +11,6 @@ services:
     environment:
       - DB_DATABASE=something
     env_file:
-      - ../.env
+      - ../.env-docker
 
 
