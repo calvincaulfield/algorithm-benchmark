@@ -11,8 +11,8 @@ services:
     environment:
       - DB_DATABASE=something
     env_file:
-      - ../.env-docker
-    command: rails s --binding 0.0.0.0 -p ${BENCH_PORT}
+      - ../.env-production
+    command: bash -c "rm -f /usr/src/app/tmp/pids/server.pid && rails s --binding 0.0.0.0 -p ${BENCH_PORT}"
 
 
 
