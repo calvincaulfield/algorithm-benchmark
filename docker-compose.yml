@@ -12,7 +12,7 @@ services:
       - DB_DATABASE=something
     env_file:
       - ../.env-production
-    command: bash -c "rm -f /usr/src/app/tmp/pids/server.pid && rails s --binding 0.0.0.0 -p ${BENCH_PORT}"
+    command: bash -c "rm -f /usr/src/app/tmp/pids/server.pid && bundle exec rake assets:precompile RAILS_ENV=production && rails s --binding 0.0.0.0 -p ${BENCH_PORT}"
 
 
 
