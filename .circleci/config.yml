@@ -1,0 +1,26 @@
+version: 2.1
+
+orbs:
+  aws-ecr: circleci/aws-ecr@6.5.0
+  aws-ecs: circleci/aws-ecs@1.0.0
+
+
+workflows:
+  my:
+    jobs:
+      - aws-ecr/build-and-push-image:
+          repo: ${MY_APP_PREFIX}
+          tag: latest
+      - aws-ecs/deploy-service-update:
+          requires:
+            - aws-ecr/build-and-push-image
+          family: ${MY_APP_PREFIX}
+          cluster-name: calvin
+          container-image-name-updates: 'container=${MY_APP_PREFIX},tag=latest'
+      - aws-ecs/run-task:
+          requires:
+            - aws-ecs/deploy-service-update
+          cluster: calvin
+          task-definition: ${MY_APP_PREFIX}
+          launch-type: EC2
+          awsvpc: false
