@@ -1,8 +1,9 @@
-version: '3'
+version: "3"
 
 services:
   rails:
     build: .
+    container_name: bench
     image: calvincaulfield/bench
     ports:
       - 3001:3001
@@ -11,5 +12,3 @@ services:
       - DB_DATABASE=something
     env_file:
       - env/.env-stage
-
-
