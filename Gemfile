@@ -5,7 +5,6 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
-
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.2.1'
 # Use sqlite3 as the database for Active Record
@@ -63,6 +62,5 @@ gem 'bootstrap-sass', '~> 3.4.1'
 gem 'chartjs-ror'
 
 gem 'jquery_match_height_rails'
-
 
 gem 'yaml_db'

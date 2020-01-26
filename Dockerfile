@@ -1,4 +1,4 @@
-FROM ruby:2.5
+FROM ruby:2.6
 
 WORKDIR /usr/src/app
 RUN apt update
@@ -9,6 +9,7 @@ RUN apt update
 RUN apt install yarn
 
 COPY Gemfile Gemfile.lock ./
+RUN gem install bundler
 RUN bundle install
 
 COPY . .
