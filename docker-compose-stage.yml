@@ -8,7 +8,6 @@ services:
     ports:
       - 3001:3001
     restart: always
-    environment:
-      - DB_DATABASE=something
+    network_mode: "host"
     env_file:
       - env/.env-stage
