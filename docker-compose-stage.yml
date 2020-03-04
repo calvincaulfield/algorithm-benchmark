@@ -10,4 +10,4 @@ services:
     network_mode: "host"
     restart: always
     env_file:
-      - env/.env-stage
+      - .env/.env-docker
