@@ -13,15 +13,10 @@ gem 'puma', '~> 3.12'
 gem 'sass-rails', '~> 5.0'
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier', '>= 1.3.0'
-# See https://github.com/rails/execjs#readme for more supported runtimes
-# gem 'therubyracer', platforms: :ruby
-
 # Use CoffeeScript for .coffee assets and views
 gem 'coffee-rails', '~> 4.2'
 # Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
 gem 'turbolinks', '~> 5'
-# Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-gem 'jbuilder', '~> 2.5'
 
 group :development do
   # Access an IRB console on exception pages or by using <%= console %> anywhere in the code.
@@ -33,14 +28,9 @@ group :development do
 end
 
 gem 'mysql2', '~> 0.5'
-
 gem 'sprockets-rails', :require => 'sprockets/railtie'
-
 gem 'jquery-rails'
 gem 'bootstrap-sass', '~> 3.4.1'
-
 gem 'chartjs-ror'
-
 gem 'jquery_match_height_rails'
-
 gem 'yaml_db'
