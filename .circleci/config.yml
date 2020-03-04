@@ -15,12 +15,12 @@ workflows:
           requires:
             - aws-ecr/build-and-push-image
           family: ${MY_APP_PREFIX}
-          cluster-name: bench
+          cluster-name: calvin
           container-image-name-updates: 'container=${MY_APP_PREFIX},tag=latest'
       - aws-ecs/run-task:
           requires:
             - aws-ecs/deploy-service-update
-          cluster: bench
+          cluster: calvin
           task-definition: ${MY_APP_PREFIX}
           launch-type: EC2
           awsvpc: false
