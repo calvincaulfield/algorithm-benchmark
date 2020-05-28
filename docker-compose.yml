@@ -8,5 +8,10 @@ services:
     ports:
       - 3001:3001
     network_mode: "host"
-    env_file:
-      - .env/.env-docker
+    environment:
+      - RAILS_ENV
+      - DB_HOST
+      - DB_USER
+      - DB_PORT
+      - DB_PASSWD
+      - BENCH_PORT
