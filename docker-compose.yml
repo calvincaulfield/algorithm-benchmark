@@ -8,6 +8,8 @@ services:
     ports:
       - 3001:3001
     network_mode: "host"
+    command: bash -f ./start_docker.sh
+    # args:
     environment:
       - RAILS_ENV
       - DB_HOST
