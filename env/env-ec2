@@ -1,4 +1,4 @@
-DB_HOST=bench.rds.internal
+DB_HOST=127.0.0.1
 DB_USER=dev
 DB_PORT=3306
 
