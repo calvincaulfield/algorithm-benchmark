@@ -19,3 +19,5 @@ services:
       - BENCH_PORT
       - SECRET_KEY_BASE
       - RAILS_SERVE_STATIC_FILES
+    restart: always
+
