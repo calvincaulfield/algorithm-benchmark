@@ -1,3 +1,5 @@
+#!/bin/bash
+
 rm -f /usr/src/app/tmp/pids/server.pid
 bundle exec rake assets:precompile
 echo $BENCH_PORT

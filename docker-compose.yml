@@ -7,9 +7,7 @@ services:
     image: calvincaulfield/bench
     ports:
       - 3001:3001
-    network_mode: "host"
-    command: bash -f ./start_docker.sh
-    # args:
+    command: ./start_docker.sh
     environment:
       - RAILS_ENV=production
       - DB_HOST
